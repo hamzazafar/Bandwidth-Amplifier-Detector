@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_celery_beat',
     'rest_framework',
     'core',
     'api',
@@ -125,3 +126,4 @@ STATIC_URL = '/static/'
 # Celery settings
 CELERY_BROKER_URL = 'amqp://localhost'
 CELERY_RESULT_BACKEND = 'rpc://'
+CELERY_TIMEZONE = "Europe/Berlin"

@@ -1,6 +1,9 @@
 from rest_framework import serializers
 
 from ipaddress import ip_network
+from django_celery_beat.validators import *
+
+import ast
 
 def port_number_validator(value):
     """
@@ -9,6 +12,8 @@ def port_number_validator(value):
 
     if not (1 <= value <= 65535):
         raise serializers.ValidationError('Port number must be in the range 1 to 65535')
+
+    return value
 
 def address_range_validator(value):
     """
@@ -22,3 +27,13 @@ def address_range_validator(value):
         ip_network(value)
     except ValueError as err:
         raise serializers.ValidationError(err)
+
+    return value
+
+def cron_validator(validator, value):
+    try:
+        validator(value)
+    except Exception as err:
+        raise serializers.ValidationError(err.message)
+    
+    return value
