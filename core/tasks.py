@@ -7,3 +7,8 @@ from celery import shared_task
 def add(x, y):
     print("Hi there!")
     return x + y
+
+@shared_task
+def testing():
+    print("HELO")
+    return 100

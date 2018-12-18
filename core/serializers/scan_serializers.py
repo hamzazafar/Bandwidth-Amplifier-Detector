@@ -52,7 +52,19 @@ class ScanSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         cron_data = validated_data.pop("crontab")
-        crontab_obj, created = CrontabSchedule.objects.get_or_create(timezone=CELERY_TIMEZONE, **cron_data)
+        cron_minute = cron_data.get("minute", "*")
+        cron_hour = cron_data.get("hour", "*")
+        cron_day_of_week = cron_data.get("day_of_week", "*")
+        cron_day_of_month = cron_data.get("day_of_month", "*")
+        cron_month_of_year = cron_data.get("month_of_year", "*")
+
+        crontab_obj,_ = CrontabSchedule.objects.get_or_create(minute=cron_minute,
+                                                              hour=cron_hour,
+                                                              day_of_week=cron_day_of_week,
+                                                              day_of_month=cron_day_of_month,
+                                                              month_of_year=cron_month_of_year,
+                                                              timezone=CELERY_TIMEZONE)
+
         periodic_task_obj = PeriodicTask.objects.create(crontab=crontab_obj, **validated_data)
         return periodic_task_obj
 
