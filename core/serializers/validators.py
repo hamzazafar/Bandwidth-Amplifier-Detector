@@ -35,5 +35,5 @@ def cron_validator(validator, value):
         validator(value)
     except Exception as err:
         raise serializers.ValidationError(err.message)
-    
+
     return value

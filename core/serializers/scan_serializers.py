@@ -1,7 +1,5 @@
 from rest_framework import serializers
 
-from core.models.scan import Scan
-
 from django_celery_beat.models import CrontabSchedule, PeriodicTask
 from django_celery_beat.validators import *
 
@@ -9,7 +7,9 @@ from .validators import *
 
 from django.conf import settings
 
-import pytz
+from ipaddress import ip_network
+
+import json
 
 CELERY_TIMEZONE = getattr(settings, "CELERY_TIMEZONE", "UTC")
 
@@ -42,13 +42,32 @@ class CronSerializer(serializers.ModelSerializer):
         return cron_validator(month_of_year_validator, data['month_of_year'])
 
 
+class ScanArgsSerializer(serializers.Serializer):
+
+    address_range = serializers.CharField(allow_blank=False,
+                                          max_length=255,
+                                          validators=[address_range_validator],
+                                          required=True,
+                                          write_only=True)
+
+    target_port = serializers.IntegerField(validators=[port_number_validator],
+                                           required=True,
+                                           write_only=True)
+
 class ScanSerializer(serializers.ModelSerializer):
 
     crontab = CronSerializer()
+    scan_args = ScanArgsSerializer(write_only=True)
+
+    scan_args_data = serializers.SerializerMethodField()
 
     class Meta:
         model = PeriodicTask
         fields = '__all__'
+        read_only_fields = ('task', 'scan_args_data')
+
+    def get_scan_args_data(self, obj):
+        return json.loads(obj.kwargs)
 
     def create(self, validated_data):
         cron_data = validated_data.pop("crontab")
@@ -65,21 +84,17 @@ class ScanSerializer(serializers.ModelSerializer):
                                                               month_of_year=cron_month_of_year,
                                                               timezone=CELERY_TIMEZONE)
 
-        periodic_task_obj = PeriodicTask.objects.create(crontab=crontab_obj, **validated_data)
+        name = validated_data.pop("name")
+        task = "core.tasks.scan"
+
+        validated_scan_args = validated_data.pop('scan_args')
+        kwargs = dict()
+        kwargs["address_range"] = validated_scan_args.pop('address_range')
+        kwargs["target_port"] = validated_scan_args.pop('target_port')
+        kwargs["version"] = ip_network(kwargs["address_range"])._version
+
+        periodic_task_obj = PeriodicTask.objects.create(crontab=crontab_obj,
+                                                        name=name,
+                                                        task=task,
+                                                        kwargs=json.dumps(kwargs))
         return periodic_task_obj
-
-"""
-class ScanSerializer(serializers.ModelSerializer):
-    address_range = serializers.CharField(allow_blank=False,
-                                          max_length=255,
-                                          validators=[address_range_validator],
-                                          required=True)
-
-    target_port = serializers.IntegerField(validators=[port_number_validator],
-                                           required=True)
-
-    class Meta:
-        model = Scan
-        fields = '__all__'
-        read_only_fields = ('version',)
-"""
