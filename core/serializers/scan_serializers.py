@@ -39,7 +39,7 @@ class CronSerializer(serializers.ModelSerializer):
         return cron_validator(day_of_month_validator, value)
 
     def validate_month_of_year(self, value):
-        return cron_validator(month_of_year_validator, data['month_of_year'])
+        return cron_validator(month_of_year_validator, value)
 
 
 class ScanArgsSerializer(serializers.Serializer):
