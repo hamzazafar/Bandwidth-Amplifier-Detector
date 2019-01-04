@@ -19,14 +19,27 @@ def address_range_validator(value):
     """
     checks if the value is a valid IPv4/IPv6 address range in CIDR notation
     """
+    address_range_list = value.split(",")
 
-    if '/' not in value:
-        raise serializers.ValidationError('Please provide address range in CIDR notation')
+    ipv4_addr = False
+    ipv6_addr = False
+    for address_range in address_range_list:
+        print("check %s" % address_range)
+        if '/' not in address_range:
+            raise serializers.ValidationError('Please provide address range %s in CIDR notation'
+                                              % address_range)
+        try:
+            addr_range = ip_network(address_range)
+            if addr_range._version == 4:
+                ipv4_addr = True
+            else:
+                ipv6_addr = True
 
-    try:
-        ip_network(value)
-    except ValueError as err:
-        raise serializers.ValidationError(err)
+            if ipv4_addr and ipv6_addr:
+                raise serializers.ValidationError('All address ranges should be IPv4 only or IPv6')
+
+        except ValueError as err:
+            raise serializers.ValidationError(err)
 
     return value
 

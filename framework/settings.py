@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_celery_beat',
+    'django_celery_results',
     'rest_framework',
     'core',
     'api',
@@ -77,13 +78,25 @@ WSGI_APPLICATION = 'framework.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.sqlite3',
+#        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#    }
+#}
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.mysql',
+        'PORT' : '3306',
+        'NAME': 'thesis',
+        'USER': 'django',
+        'PASSWORD': 'django123',
+        'HOST': '127.0.0.1',
+        #'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        #'PORT': '',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
@@ -125,5 +138,17 @@ STATIC_URL = '/static/'
 
 # Celery settings
 CELERY_BROKER_URL = 'amqp://localhost'
-CELERY_RESULT_BACKEND = 'rpc://'
+#CELERY_RESULT_BACKEND = 'rpc://'
+#CELERY_RESULT_BACKEND = 'db+mysql://django:django123@localhost/thesis'
+CELERY_RESULT_BACKEND = 'django-db'
+#CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
 CELERY_TIMEZONE = "Europe/Berlin"
+
+
+
+#Mail Settings
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'hamza.zafar1993@gmail.com'
+EMAIL_HOST_PASSWORD = ''
+EMAIL_PORT = 587

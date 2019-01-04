@@ -1,1 +1,1 @@
-from .scan import *
+from .scan import ScanTimeSeriesResult

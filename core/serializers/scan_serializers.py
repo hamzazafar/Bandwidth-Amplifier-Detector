@@ -89,9 +89,13 @@ class ScanSerializer(serializers.ModelSerializer):
 
         validated_scan_args = validated_data.pop('scan_args')
         kwargs = dict()
-        kwargs["address_range"] = validated_scan_args.pop('address_range')
+
+        kwargs["scan_name"] = name
+        kwargs["address_range"] = validated_scan_args.pop('address_range').split(',')
         kwargs["target_port"] = validated_scan_args.pop('target_port')
-        kwargs["version"] = ip_network(kwargs["address_range"])._version
+
+        # set the IP address version
+        kwargs["version"] = ip_network(kwargs["address_range"][0])._version
 
         periodic_task_obj = PeriodicTask.objects.create(crontab=crontab_obj,
                                                         name=name,
