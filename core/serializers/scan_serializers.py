@@ -54,6 +54,11 @@ class ScanArgsSerializer(serializers.Serializer):
                                            required=True,
                                            write_only=True)
 
+    request_hexdump = serializers.CharField(allow_blank=False,
+                                           write_only=True,
+                                           required=True)
+
+
 class ScanSerializer(serializers.ModelSerializer):
 
     crontab = CronSerializer()
@@ -93,6 +98,7 @@ class ScanSerializer(serializers.ModelSerializer):
         kwargs["scan_name"] = name
         kwargs["address_range"] = validated_scan_args.pop('address_range').split(',')
         kwargs["target_port"] = validated_scan_args.pop('target_port')
+        kwargs["request_hexdump"] = validated_scan_args.pop('request_hexdump')
 
         # set the IP address version
         kwargs["version"] = ip_network(kwargs["address_range"][0])._version
