@@ -14,3 +14,4 @@ class ScanListCreateView(generics.ListCreateAPIView):
 class ScanRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = PeriodicTask.objects.all()
     serializer_class = ScanSerializer
+    lookup_field = 'name'
