@@ -2,7 +2,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.core.mail import EmailMultiAlternatives
 from django_celery_results.models import TaskResult
-from core.models.scan import ScanTimeSeriesResult
+from core.models.scan import ScanTimeSeriesResult, Amplifier
 from datetime import date
 from prettytable import PrettyTable
 
@@ -21,10 +21,17 @@ def create_result(sender, instance, created, *args, **kwargs):
     active_amplifiers_count = res["active_amplifiers_count"]
     scan_name = res["scan_name"]
 
-    obj = ScanTimeSeriesResult(scan_name=scan_name,
-                               active_amplifiers_count=active_amplifiers_count,
-                               scan_result=instance)
-    obj.save()
+    scan_result_obj = ScanTimeSeriesResult(scan_name=scan_name,
+                                           active_amplifiers_count=active_amplifiers_count,
+                                           scan_result=instance)
+    scan_result_obj.save()
+
+    for ip, details in res["amplifiers"].items():
+        obj = Amplifier(address=ip,
+                        response_size=details["response_size"],
+                        amplification_factor=details["amplification_factor"],
+                        scan=scan_result_obj)
+        obj.save()
 
     # send email to administrator
     if active_amplifiers_count < 1:
