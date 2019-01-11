@@ -9,7 +9,8 @@ import random
 logger = get_task_logger(__name__)
 
 @shared_task(bind=True)
-def scan(self, scan_name, address_range, target_port, version, request_hexdump):
+def scan(self, scan_name, address_range, target_port, version, request_hexdump,
+         cron_str=''):
     logger.info('Request: {0!r}'.format(self.request))
     logger.info("""
                 Scan Name: {0}

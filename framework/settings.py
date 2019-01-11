@@ -145,6 +145,7 @@ CELERY_RESULT_BACKEND = 'django-db'
 CELERY_TIMEZONE = "Europe/Berlin"
 
 
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 #Mail Settings
 EMAIL_USE_TLS = True

@@ -81,6 +81,11 @@ class ScanSerializer(serializers.ModelSerializer):
         cron_day_of_week = cron_data.get("day_of_week", "*")
         cron_day_of_month = cron_data.get("day_of_month", "*")
         cron_month_of_year = cron_data.get("month_of_year", "*")
+        cron_str = "{0} {1} {2} {3} {4}".format(cron_minute,
+                                                cron_hour,
+                                                cron_day_of_week,
+                                                cron_day_of_month,
+                                                cron_month_of_year)
 
         crontab_obj,_ = CrontabSchedule.objects.get_or_create(minute=cron_minute,
                                                               hour=cron_hour,
@@ -99,6 +104,7 @@ class ScanSerializer(serializers.ModelSerializer):
         kwargs["address_range"] = validated_scan_args.pop('address_range').split(',')
         kwargs["target_port"] = validated_scan_args.pop('target_port')
         kwargs["request_hexdump"] = validated_scan_args.pop('request_hexdump')
+        kwargs["cron_str"] = cron_str
 
         # set the IP address version
         kwargs["version"] = ip_network(kwargs["address_range"][0])._version
