@@ -30,7 +30,6 @@ def scan(self, scan_name, address_range, target_port, version, request_hexdump,
         response_size = random.randint(30,10000)
         amps[ip]["response_size"] = response_size
         amps[ip]["amplification_factor"] = round(response_size/request_size,2)
-
     result= dict()
     result["scan_name"] = scan_name
     result["request_size"] = request_size
