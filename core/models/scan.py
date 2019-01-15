@@ -10,6 +10,7 @@ class ScanTimeSeriesResult(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     scan_name = models.CharField(null=False, max_length=255)
     active_amplifiers_count = models.IntegerField(null=False)
+    status = models.CharField(null=False, max_length=255)
 
     # relations
     scan_result = models.OneToOneField(TaskResult,

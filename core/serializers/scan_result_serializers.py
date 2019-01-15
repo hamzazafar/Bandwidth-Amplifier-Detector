@@ -18,8 +18,10 @@ class ScanResultSerializer(serializers.ModelSerializer):
     traceback = serializers.CharField(source='scan_result.traceback')
 
     def get_amplifiers(self, obj):
-        result = json.loads(obj.scan_result.result)
-        return result["amplifiers"]
+        if obj.status == "SUCCESS":
+            result = json.loads(obj.scan_result.result)
+            return result["amplifiers"]
+        return None
 
     class Meta:
         model = ScanTimeSeriesResult

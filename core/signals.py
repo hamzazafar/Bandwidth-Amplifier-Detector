@@ -46,7 +46,8 @@ def create_result(sender, instance, created, *args, **kwargs):
 
             scan_result_obj = ScanTimeSeriesResult(scan_name=scan_name,
                                                    active_amplifiers_count=active_amplifiers_count,
-                                                   scan_result=instance)
+                                                   scan_result=instance,
+                                                   status=instance.status)
             scan_result_obj.save()
 
             for ip, details in res["amplifiers"].items():
@@ -76,6 +77,13 @@ def create_result(sender, instance, created, *args, **kwargs):
 
         elif instance.status == 'FAILURE':
             scan_name = instance.task_kwargs['scan_name']
+
+            scan_result_obj = ScanTimeSeriesResult(scan_name=scan_name,
+                                                   active_amplifiers_count=0,
+                                                   scan_result=instance,
+                                                   status=instance.status)
+            scan_result_obj.save()
+
             subject = "Scan '%s' has failed " % scan_name
             from_email = 'hamza.zafar1993@gmail.com'
             to = '11bscshzafar@seecs.edu.pk'
