@@ -21,10 +21,12 @@ def address_range_validator(value):
     """
     address_range_list = value.split(",")
 
+    if len(address_range_list) != len(set(address_range_list)):
+        raise serializers.ValidationError("Duplicate address ranges found")
+
     ipv4_addr = False
     ipv6_addr = False
     for address_range in address_range_list:
-        print("check %s" % address_range)
         if '/' not in address_range:
             raise serializers.ValidationError('Please provide address range %s in CIDR notation'
                                               % address_range)
