@@ -16,7 +16,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 3,
-  "iteration": 1547227947326,
+  "iteration": 1547565879382,
   "links": [],
   "panels": [
     {
@@ -29,6 +29,7 @@
         "#890f02"
       ],
       "datasource": "MySQL",
+      "description": "Total number of Successful and Failed scanning jobs",
       "format": "none",
       "gauge": {
         "maxValue": 100,
@@ -77,14 +78,14 @@
         "lineColor": "rgb(31, 120, 193)",
         "show": false
       },
-      "tableColumn": "total_run_count",
+      "tableColumn": "count(*)",
       "targets": [
         {
           "format": "table",
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  total_run_count \nFROM django_celery_beat_periodictask\nWHERE\n  name = '$scan_name';",
+          "rawSql": "SELECT\n  count(*) \nFROM core_scantimeseriesresult\nWHERE\n  scan_name = '$scan_name';",
           "refId": "A",
           "select": [
             [
@@ -120,6 +121,111 @@
       ],
       "thresholds": "",
       "title": "Run Count",
+      "transparent": false,
+      "type": "singlestat",
+      "valueFontSize": "120%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "avg"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorValue": true,
+      "colors": [
+        "#299c46",
+        "rgba(237, 129, 40, 0.89)",
+        "#d44a3a"
+      ],
+      "datasource": "MySQL",
+      "description": "Number of active amplifiers from the last successful scanning job execution!",
+      "format": "none",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 3,
+        "x": 3,
+        "y": 0
+      },
+      "id": 7,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false
+      },
+      "tableColumn": "active_amplifiers_count",
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "hide": false,
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "select a.active_amplifiers_count from core_scantimeseriesresult a where a.scan_name=\"$scan_name\" and a.status=\"SUCCESS\" order by a.created desc LIMIT 1;",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "id"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "auth_user",
+          "timeColumn": "last_login",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "thresholds": "",
+      "title": "Active Amplifiers",
       "type": "singlestat",
       "valueFontSize": "120%",
       "valueMaps": [
@@ -152,7 +258,7 @@
       "gridPos": {
         "h": 4,
         "w": 6,
-        "x": 3,
+        "x": 6,
         "y": 0
       },
       "id": 3,
@@ -250,7 +356,7 @@
       "colors": [
         "#299c46",
         "rgba(237, 129, 40, 0.89)",
-        "#d44a3a"
+        "#890f02"
       ],
       "datasource": "MySQL",
       "format": "none",
@@ -263,11 +369,11 @@
       },
       "gridPos": {
         "h": 4,
-        "w": 3,
-        "x": 9,
+        "w": 5,
+        "x": 12,
         "y": 0
       },
-      "id": 7,
+      "id": 11,
       "interval": null,
       "links": [],
       "mappingType": 1,
@@ -287,7 +393,7 @@
       "postfix": "",
       "postfixFontSize": "50%",
       "prefix": "",
-      "prefixFontSize": "50%",
+      "prefixFontSize": "100%",
       "rangeMaps": [
         {
           "from": "null",
@@ -301,15 +407,14 @@
         "lineColor": "rgb(31, 120, 193)",
         "show": false
       },
-      "tableColumn": "active_amplifiers_count",
+      "tableColumn": "status",
       "targets": [
         {
           "format": "table",
           "group": [],
-          "hide": false,
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "select a.active_amplifiers_count from core_scantimeseriesresult a left outer join core_scantimeseriesresult b on a.scan_name=b.scan_name and a.created<b.created where b.scan_name is null and a.scan_name='$scan_name' order by a.created desc;",
+          "rawSql": "select status from core_scantimeseriesresult where scan_name='$scan_name' order by created desc limit 1;",
           "refId": "A",
           "select": [
             [
@@ -321,20 +426,142 @@
               }
             ]
           ],
-          "table": "auth_user",
-          "timeColumn": "last_login",
-          "timeColumnType": "timestamp",
+          "table": "django_celery_beat_periodictask",
+          "timeColumn": "total_run_count",
+          "timeColumnType": "int",
           "where": [
             {
-              "name": "$__timeFilter",
+              "name": "$__unixEpochFilter",
               "params": [],
               "type": "macro"
+            },
+            {
+              "datatype": "varchar",
+              "name": "",
+              "params": [
+                "name",
+                "=",
+                "'$scan_name'"
+              ],
+              "type": "expression"
             }
           ]
         }
       ],
       "thresholds": "",
-      "title": "Active Amplifiers",
+      "title": "Last Run Status",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "avg"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorValue": true,
+      "colors": [
+        "#299c46",
+        "rgba(237, 129, 40, 0.89)",
+        "#890f02"
+      ],
+      "datasource": "MySQL",
+      "format": "none",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 17,
+        "y": 0
+      },
+      "id": 10,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "100%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false
+      },
+      "tableColumn": "DATE_FORMAT(max(created), \"%D %b %Y %r\")",
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "select DATE_FORMAT(max(created), \"%D %b %Y %r\") from core_scantimeseriesresult where scan_name='$scan_name' and status=\"SUCCESS\";",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "id"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "django_celery_beat_periodictask",
+          "timeColumn": "total_run_count",
+          "timeColumnType": "int",
+          "where": [
+            {
+              "name": "$__unixEpochFilter",
+              "params": [],
+              "type": "macro"
+            },
+            {
+              "datatype": "varchar",
+              "name": "",
+              "params": [
+                "name",
+                "=",
+                "'$scan_name'"
+              ],
+              "type": "expression"
+            }
+          ]
+        }
+      ],
+      "thresholds": "",
+      "title": "Last Successful run at",
       "type": "singlestat",
       "valueFontSize": "80%",
       "valueMaps": [
@@ -393,7 +620,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "select json_extract(kwargs, \"$.target_port\") as \"Port\",json_extract(kwargs, \"$.cron_str\") as \"Crontab\", TRIM( LEADING '[\"' FROM TRIM(TRAILING '\"]' FROM json_extract(kwargs, \"$.address_range\"))) as \"Target Addresses\" , TRIM(BOTH '\"' FROM json_extract(kwargs, \"$.request_hexdump\")) as \"Request hexdump\" from django_celery_beat_periodictask where name='$scan_name';",
+          "rawSql": "select json_extract(kwargs, \"$.target_port\") as \"Port\", TRIM(BOTH '\"' FROM json_extract(kwargs, \"$.cron_str\")) as \"Crontab\", TRIM( LEADING '[\"' FROM TRIM(TRAILING '\"]' FROM json_extract(kwargs, \"$.address_range\"))) as \"Target Addresses\" , TRIM(BOTH '\"' FROM json_extract(kwargs, \"$.request_hexdump\")) as \"Request hexdump\" from django_celery_beat_periodictask where name='$scan_name';",
           "refId": "A",
           "select": [
             [
@@ -424,7 +651,7 @@
       "datasource": "MySQL",
       "fontSize": "100%",
       "gridPos": {
-        "h": 5,
+        "h": 7,
         "w": 24,
         "x": 0,
         "y": 7
@@ -435,8 +662,8 @@
       "scroll": true,
       "showHeader": true,
       "sort": {
-        "col": null,
-        "desc": false
+        "col": 2,
+        "desc": true
       },
       "styles": [
         {
@@ -466,7 +693,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "select c.address as \"Address\", c.response_size as \"Response Size\", c.amplification_factor as \"Bandwidth Amplification Factor\"  from  core_scantimeseriesresult a join core_amplifier c on c.scan_id=a.id left outer join core_scantimeseriesresult b on a.scan_name=b.scan_name and a.created<b.created where b.scan_name is null and a.scan_name=\"$scan_name\" order by a.created desc;",
+          "rawSql": "select c.address as \"Address\", c.response_size as \"Response Size\", c.amplification_factor as \"Bandwidth Amplification Factor\" from  core_scantimeseriesresult a join core_amplifier c on c.scan_id=a.id left outer join core_scantimeseriesresult b on a.scan_name=b.scan_name and a.created<b.created and a.status=\"SUCCESS\" and b.status=\"SUCCESS\" where b.scan_name is null and a.scan_name=\"$scan_name\" order by a.created desc;",
           "refId": "A",
           "select": [
             [
@@ -488,7 +715,7 @@
           ]
         }
       ],
-      "title": "Amplifiers",
+      "title": "Amplifiers from Last Successful scanning",
       "transform": "table",
       "type": "table"
     }
@@ -556,7 +783,7 @@
     ]
   },
   "timezone": "",
-  "title": "test_dash",
+  "title": "Scan Details",
   "uid": "MXStvkQmk",
-  "version": 24
+  "version": 43
 }
