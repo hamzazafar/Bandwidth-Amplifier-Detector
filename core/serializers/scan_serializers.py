@@ -69,7 +69,7 @@ class ScanSerializer(serializers.ModelSerializer):
     class Meta:
         model = PeriodicTask
         fields = '__all__'
-        read_only_fields = ('task', 'scan_args_data')
+        read_only_fields = ('task', 'scan_args_data',)
 
     def get_scan_args_data(self, obj):
         return json.loads(obj.kwargs)
