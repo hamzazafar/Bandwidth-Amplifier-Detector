@@ -187,21 +187,20 @@ elif args.type == "info":
         if res.status_code == 200:
             data = res.json()
             print("Details for scan '%s'\n" % args.name)
-            output = ("""
-            * Enabled: {0}
-            * Total run count: {1}
-            * Last run at: {2}
-            * Target addresses: {3}
-            * Target port: {4}
-            * Request Hexdump: {5}
-            * Cron: {6}
-            """).format(data["enabled"],
-                       data["total_run_count"],
-                       data["last_run_at"],
-                       data["scan_args_data"]["address_range"],
-                       data["scan_args_data"]["target_port"],
-                       data["scan_args_data"]["request_hexdump"],
-                       data["scan_args_data"]["cron_str"])
+            output = "* Enabled: {0}\n" \
+                     "* Total run count: {1}\n" \
+                     "* Last run at: {2}\n" \
+                     "* Target addresses: {3}\n" \
+                     "* Target port: {4}\n" \
+                     "* Request Hexdump: {5}\n" \
+                     "* Cron: {6}\n" \
+                     .format(data["enabled"],
+                             data["total_run_count"],
+                             data["last_run_at"],
+                             data["scan_args_data"]["address_range"],
+                             data["scan_args_data"]["target_port"],
+                             data["scan_args_data"]["request_hexdump"],
+                             data["scan_args_data"]["cron_str"])
 
             print(output)
         else:
