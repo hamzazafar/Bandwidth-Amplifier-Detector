@@ -2,17 +2,16 @@
 
 ### Print help:
 ```
-(thesis) hamza@hamza:~/master-thesis/client$ python scan.py -h
 usage: scan.py [-h] [--name NAME] [--target-port TARGET_PORT]
                [--target-hosts TARGET_HOSTS [TARGET_HOSTS ...]]
                [--request-payload REQUEST_PAYLOAD] [--minute MINUTE]
                [--hour HOUR] [--day-of-week DAY_OF_WEEK]
                [--day-of-month DAY_OF_MONTH] [--month-of-year MONTH_OF_YEAR]
                [--latest LATEST]
-               {create,delete,list,info,result}
+               {create,delete,update,list,info,result,disable,enable}
 
 positional arguments:
-  {create,delete,list,info,result}
+  {create,delete,update,list,info,result,disable,enable}
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -32,7 +31,7 @@ optional arguments:
                         Day of the month field for Cron
   --month-of-year MONTH_OF_YEAR
                         Month of the year field for Cron
-  --latest LATEST       Get n number of recent scan results
+  --latest LATEST       Get n number of latest scan results
 ```
 
 ### Create Scan:
