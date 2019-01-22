@@ -13,7 +13,6 @@ from django_celery_beat.models import PeriodicTask
 
 from django.shortcuts import get_list_or_404, get_object_or_404
 
-
 class ScanListCreateView(generics.ListCreateAPIView):
     queryset  = PeriodicTask.objects.all()
     serializer_class = ScanSerializer
@@ -32,10 +31,11 @@ def get_scan_results(request, name):
     if latest == 1:
         # return the most recent result if query params is not specified
         try:
-            result = ScanTimeSeriesResult.objects.latest('created')
+            result = ScanTimeSeriesResult.objects.filter(scan_name=name).latest('created')
             serializer = ScanResultSerializer(result)
         except ScanTimeSeriesResult.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+            return Response(status=status.HTTP_404_NOT_FOUND,
+                            data={"Details": "Not Found"})
     else:
         result = get_list_or_404(ScanTimeSeriesResult.objects.order_by('created'),
                                  scan_name=name)
