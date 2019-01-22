@@ -179,3 +179,24 @@ Details for scan 'scan_one'
             * Cron: * * * * *
             
 ```
+
+### Updating a Scan:
+```
+(thesis) hamza@hamza:~/master-thesis/client$ python scan.py update --name scan_one --target-hosts 10.0.0.0/16 \
+										   --target-port 54 \
+                                                                                   --request-payload aaaaa \
+                                                                                   --minute */3
+Scan 'scan_one' updated successfully
+(thesis) hamza@hamza:~/master-thesis/client$ python scan.py info --name scan_one
+Details for scan 'scan_one'
+
+
+            * Enabled: True
+            * Total run count: 92
+            * Last run at: 2019-01-22T13:08:00.004416Z
+            * Target addresses: ['10.0.0.0/16']
+            * Target port: 54
+            * Request Hexdump: aaaaa
+            * Cron: */3 * * * *
+            
+```

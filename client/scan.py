@@ -12,12 +12,15 @@ HOST = config['SERVER']['HOST']
 PORT = config['SERVER']['PORT']
 
 def pretty(d):
+   if not isinstance(d, dict):
+       return
+
    for key, value in d.items():
       if isinstance(value, dict):
          pretty(value)
       elif isinstance(value, list):
           for v in value:
-              print("* "+str(v))
+              print("* %s: %s" % (str(key),str(v)))
       else:
          print("* "+str(value))
 
@@ -51,6 +54,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("type",
                     choices=("create",
                              "delete",
+                             "update",
                              "list",
                              "info",
                              "result",
@@ -91,7 +95,7 @@ parser.add_argument("--month-of-year",
                     default="*")
 
 parser.add_argument("--latest",
-                    help="Get n number of recent scan results")
+                    help="Get n number of latest scan results")
 
 args = parser.parse_args()
 
@@ -252,6 +256,53 @@ elif args.type == "disable" or args.type == "enable":
             print("Scan '%s' %sd successfully" % (args.name, args.type))
         else:
             print("Failed to %s scan '%s'\n" % (args.type, args.name))
+            print("Errors:")
+            pretty(res.json())
+    except requests.exceptions.RequestException as err:
+        print(err)
+        sys.exit(1)
+
+elif args.type == "update":
+    if not args.name:
+        parser.error("scan update requires --name argument")
+
+    try:
+        url = "http://%s:%s/api/v1/scan/%s" % (HOST, PORT, args.name)
+        params = dict()
+        params['scan_args'] = dict()
+
+        if args.target_hosts:
+            params['scan_args']['address_range'] = ','.join(args.target_hosts)
+
+        if args.target_port:
+            params['scan_args']['target_port'] = args.target_port
+
+        if args.request_payload:
+            params['scan_args']['request_hexdump'] = args.request_payload
+
+        params['crontab'] = dict()
+
+        if args.minute:
+            params['crontab']['minute'] = args.minute
+
+        if args.hour:
+            params['crontab']['hour'] = args.hour
+
+        if args.day_of_week:
+            params['crontab']['day_of_week'] = args.day_of_week
+
+        if args.day_of_month:
+            params['crontab']['day_of_month'] = args.day_of_month
+
+        if args.month_of_year:
+            params['crontab']['month_of_year'] = args.month_of_year
+
+        res = requests.put(url, json=params)
+
+        if res.status_code == 200:
+            print("Scan '%s' updated successfully" % args.name)
+        else:
+            print("Failed to update Scan '%s'\n" % args.name)
             print("Errors:")
             pretty(res.json())
     except requests.exceptions.RequestException as err:

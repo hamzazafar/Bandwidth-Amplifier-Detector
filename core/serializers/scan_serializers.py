@@ -69,10 +69,50 @@ class ScanSerializer(serializers.ModelSerializer):
     class Meta:
         model = PeriodicTask
         fields = '__all__'
-        read_only_fields = ('task', 'scan_args_data',)
+        read_only_fields = ('task', 'scan_args_data')
 
     def get_scan_args_data(self, obj):
         return json.loads(obj.kwargs)
+
+    def update(self, instance, validated_data):
+        cron_data = validated_data.pop("crontab")
+        cron_minute = cron_data.get("minute", instance.crontab.minute)
+        cron_hour = cron_data.get("hour", instance.crontab.hour)
+        cron_day_of_week = cron_data.get("day_of_week", instance.crontab.day_of_week)
+        cron_day_of_month = cron_data.get("day_of_month", instance.crontab.day_of_month)
+        cron_month_of_year = cron_data.get("month_of_year", instance.crontab.month_of_year)
+        cron_str = "{0} {1} {2} {3} {4}".format(cron_minute,
+                                                cron_hour,
+                                                cron_day_of_week,
+                                                cron_day_of_month,
+                                                cron_month_of_year)
+
+        instance_kwargs = json.loads(instance.kwargs)
+        instance_kwargs["cron_str"] = cron_str
+
+        crontab_obj,_ = CrontabSchedule.objects.get_or_create(minute=cron_minute,
+                                                              hour=cron_hour,
+                                                              day_of_week=cron_day_of_week,
+                                                              day_of_month=cron_day_of_month,
+                                                              month_of_year=cron_month_of_year,
+                                                              timezone=CELERY_TIMEZONE)
+        instance.crontab = crontab_obj
+
+        validated_scan_args = validated_data.pop('scan_args')
+
+        if "address_range" in validated_scan_args:
+            instance_kwargs["address_range"] = validated_scan_args.get('address_range').split(',')
+            instance_kwargs["version"] = ip_network(instance_kwargs["address_range"][0])._version
+
+        if "target_port" in validated_scan_args:
+            instance_kwargs["target_port"] = validated_scan_args.get('target_port')
+
+        if "request_hexdump" in validated_scan_args:
+            instance_kwargs["request_hexdump"] = validated_scan_args.get('request_hexdump')
+
+        instance.kwargs = json.dumps(instance_kwargs)
+        instance.save()
+        return instance
 
     def create(self, validated_data):
         cron_data = validated_data.pop("crontab")
