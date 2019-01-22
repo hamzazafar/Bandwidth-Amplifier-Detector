@@ -180,7 +180,6 @@ elif args.type == "info":
         res = requests.get(url)
         if res.status_code == 200:
             data = res.json()
-            print(data["enabled"])
             print("Details for scan '%s'\n" % args.name)
             output = ("""
             * Enabled: {0}

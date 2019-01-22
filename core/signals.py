@@ -1,7 +1,8 @@
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from django.conf import settings
 from django_celery_results.models import TaskResult
+from django_celery_beat.models import PeriodicTask
 from core.models.scan import ScanTimeSeriesResult, Amplifier
 from datetime import date
 from prettytable import PrettyTable
@@ -38,16 +39,18 @@ def create_result(sender, instance, created, *args, **kwargs):
 
         EMAIL_RECEIVE_HOSTS_LIST = EMAIL_RECEIVE_HOSTS.split(',')
 
+        res = json.loads(instance.result)
+        periodic_task = PeriodicTask.objects.get(name=res["scan_name"])
         if instance.status == 'SUCCESS':
             # save a new timeseries record
-            res = json.loads(instance.result)
             active_amplifiers_count = res["active_amplifiers_count"]
             scan_name = res["scan_name"]
 
             scan_result_obj = ScanTimeSeriesResult(scan_name=scan_name,
                                                    active_amplifiers_count=active_amplifiers_count,
                                                    scan_result=instance,
-                                                   status=instance.status)
+                                                   status=instance.status,
+                                                   periodic_task=periodic_task)
             scan_result_obj.save()
 
             for ip, details in res["amplifiers"].items():
@@ -81,14 +84,14 @@ def create_result(sender, instance, created, *args, **kwargs):
             scan_result_obj = ScanTimeSeriesResult(scan_name=scan_name,
                                                    active_amplifiers_count=0,
                                                    scan_result=instance,
-                                                   status=instance.status)
+                                                   status=instance.status,
+                                                   periodic_task=periodic_task)
             scan_result_obj.save()
 
             subject = "Scan '%s' has failed " % scan_name
             from_email = 'hamza.zafar1993@gmail.com'
             to = '11bscshzafar@seecs.edu.pk'
 
-            res = json.loads(instance.result)
             content = "Exception Type: %s\n" % res["exc_type"]
             content += "Exception Message: %s\n" % res["exc_message"]
             content += "Exception Module: %s\n" % res["exc_module"]
@@ -98,3 +101,8 @@ def create_result(sender, instance, created, *args, **kwargs):
     except Exception as err:
         # log exception
         logger.error("%s" % err)
+
+@receiver(post_delete, sender=ScanTimeSeriesResult)
+def delete_task_result(sender, instance, *args, **kwargs):
+    task_result = instance.scan_result
+    task_result.delete()
