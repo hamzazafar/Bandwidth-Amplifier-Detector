@@ -135,3 +135,47 @@ Scans List:
 (thesis) hamza@hamza:~/master-thesis/client$ python scan.py delete --name scan_two
 Scan 'scan_two' deleted successfully
 ```
+
+### Enable/Disable Scan:
+```
+(thesis) hamza@hamza:~/master-thesis/client$ python scan.py info --name scan_one
+Details for scan 'scan_one'
+
+
+            * Enabled: True
+            * Total run count: 35
+            * Last run at: None
+            * Target addresses: ['10.10.0.0/16', '192.168.0.0/16']
+            * Target port: 12
+            * Request Hexdump: abcabcabc
+            * Cron: * * * * *
+            
+(thesis) hamza@hamza:~/master-thesis/client$ python scan.py disable --name scan_one
+Scan 'scan_one' disabled successfully
+(thesis) hamza@hamza:~/master-thesis/client$ python scan.py info --name scan_one
+Details for scan 'scan_one'
+
+
+            * Enabled: False
+            * Total run count: 35
+            * Last run at: None
+            * Target addresses: ['10.10.0.0/16', '192.168.0.0/16']
+            * Target port: 12
+            * Request Hexdump: abcabcabc
+            * Cron: * * * * *
+            
+(thesis) hamza@hamza:~/master-thesis/client$ python scan.py enable --name scan_one
+Scan 'scan_one' enabled successfully
+(thesis) hamza@hamza:~/master-thesis/client$ python scan.py info --name scan_one
+Details for scan 'scan_one'
+
+
+            * Enabled: True
+            * Total run count: 35
+            * Last run at: None
+            * Target addresses: ['10.10.0.0/16', '192.168.0.0/16']
+            * Target port: 12
+            * Request Hexdump: abcabcabc
+            * Cron: * * * * *
+            
+```

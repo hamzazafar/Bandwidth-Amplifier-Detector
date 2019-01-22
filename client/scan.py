@@ -53,7 +53,9 @@ parser.add_argument("type",
                              "delete",
                              "list",
                              "info",
-                             "result"))
+                             "result",
+                             "disable",
+                             "enable"))
 
 parser.add_argument("--name",
                     help="set name of scan",)
@@ -230,6 +232,26 @@ elif args.type == "result":
                 print(output)
         else:
             print("Failed to get result for scan '%s'\n" % args.name)
+            print("Errors:")
+            pretty(res.json())
+    except requests.exceptions.RequestException as err:
+        print(err)
+        sys.exit(1)
+
+elif args.type == "disable" or args.type == "enable":
+    if not args.name:
+        parser.error("scan %s requires --name arguemt" % args.type)
+
+    try:
+        url = "http://%s:%s/api/v1/scan/%s" % (HOST, PORT, args.name)
+
+        data = dict()
+        data["enabled"] = False if args.type == "disable" else True
+        res = requests.put(url, json=data)
+        if res.status_code == 200:
+            print("Scan '%s' %sd successfully" % (args.name, args.type))
+        else:
+            print("Failed to %s scan '%s'\n" % (args.type, args.name))
             print("Errors:")
             pretty(res.json())
     except requests.exceptions.RequestException as err:

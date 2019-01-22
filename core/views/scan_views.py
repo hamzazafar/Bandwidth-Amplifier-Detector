@@ -22,6 +22,9 @@ class ScanRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ScanSerializer
     lookup_field = 'name'
 
+    def put(self, request, *args, **kwargs):
+        return self.partial_update(request, *args, **kwargs)
+
 
 @api_view(['GET'])
 def get_scan_results(request, name):
