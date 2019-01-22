@@ -3,6 +3,8 @@ import argparse
 import requests
 import sys
 
+from prettytable import PrettyTable
+
 config = configparser.ConfigParser()
 config.read('config.ini')
 
@@ -20,13 +22,38 @@ def pretty(d):
          print("* "+str(value))
 
 
+def process_result(result):
+    status = result["status"]
+    output = "\n\n----------------------------------------------------------\n\n"
+    output += "* Status: %s\n" % status
+    output += "* Created: %s\n" % result["created"]
+
+    if status == "FAILURE":
+        output += "* Traceback: %s" % result["traceback"]
+    elif status == "SUCCESS":
+        output += "* Number of Amplifiers: %s\n" % len(result["amplifiers"])
+
+        table = PrettyTable()
+        table.field_names = ["Amplifier", "Response Size", "Amplification Factor"]
+
+        for ip, details in result["amplifiers"].items():
+            table.add_row([ip, details["response_size"], details["amplification_factor"]])
+
+        table.sortby = "Amplification Factor"
+        # sort in descending order
+        table.reversesort = True
+
+        output += table.get_string()
+    return output
+
 parser = argparse.ArgumentParser()
 
 parser.add_argument("type",
                     choices=("create",
                              "delete",
                              "list",
-                             "details"))
+                             "info",
+                             "result"))
 
 parser.add_argument("--name",
                     help="set name of scan",)
@@ -60,6 +87,9 @@ parser.add_argument("--day-of-month",
 parser.add_argument("--month-of-year",
                     help="Month of the year field for Cron",
                     default="*")
+
+parser.add_argument("--latest",
+                    help="Get n number of recent scan results")
 
 args = parser.parse_args()
 
@@ -141,9 +171,9 @@ elif args.type == "list":
         print(err)
         sys.exit(1)
 
-elif args.type == "details":
+elif args.type == "info":
     if not args.name:
-        parser.error("scan details requires --name arguemt")
+        parser.error("scan info requires --name arguemt")
 
     try:
         url = "http://%s:%s/api/v1/scan/%s" % (HOST, PORT, args.name)
@@ -152,7 +182,7 @@ elif args.type == "details":
             data = res.json()
             print(data["enabled"])
             print("Details for scan '%s'\n" % args.name)
-            output = """
+            output = ("""
             * Enabled: {0}
             * Total run count: {1}
             * Last run at: {2}
@@ -160,7 +190,7 @@ elif args.type == "details":
             * Target port: {4}
             * Request Hexdump: {5}
             * Cron: {6}
-            """.format(data["enabled"],
+            """).format(data["enabled"],
                        data["total_run_count"],
                        data["last_run_at"],
                        data["scan_args_data"]["address_range"],
@@ -170,10 +200,39 @@ elif args.type == "details":
 
             print(output)
         else:
-            print("Failed to get details for scan '%s'\n" % args.name)
+            print("Failed to get info for scan '%s'\n" % args.name)
             print("Errors:")
             pretty(res.json())
     except requests.exceptions.RequestException as err:
         print(err)
         sys.exit(1)
 
+elif args.type == "result":
+    if not args.name:
+        parser.error("scan result requires --name arguemt")
+
+    try:
+        url = "http://%s:%s/api/v1/scan/%s/result" % (HOST, PORT, args.name)
+        if args.latest:
+            url += "?latest=%s" % args.latest
+
+        res = requests.get(url)
+        if res.status_code == 200:
+            data = res.json()
+            if len(data) == 0:
+                print("No results found for scan %s" % args.name)
+            else:
+                output = ""
+                if isinstance(data, list):
+                    for result in data:
+                        output += process_result(result)
+                else:
+                    output += process_result(data)
+                print(output)
+        else:
+            print("Failed to get result for scan '%s'\n" % args.name)
+            print("Errors:")
+            pretty(res.json())
+    except requests.exceptions.RequestException as err:
+        print(err)
+        sys.exit(1)
