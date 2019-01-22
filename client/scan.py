@@ -24,8 +24,7 @@ def pretty(d):
 
 def process_result(result):
     status = result["status"]
-    output = "\n\n----------------------------------------------------------\n\n"
-    output += "* Status: %s\n" % status
+    output = "\n* Status: %s\n" % status
     output += "* Created: %s\n" % result["created"]
 
     if status == "FAILURE":
@@ -44,6 +43,7 @@ def process_result(result):
         table.reversesort = True
 
         output += table.get_string()
+        output += "\n"
     return output
 
 parser = argparse.ArgumentParser()
@@ -221,7 +221,7 @@ elif args.type == "result":
             if len(data) == 0:
                 print("No results found for scan %s" % args.name)
             else:
-                output = ""
+                output = "\n"
                 if isinstance(data, list):
                     for result in data:
                         output += process_result(result)
