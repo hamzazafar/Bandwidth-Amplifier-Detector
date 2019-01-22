@@ -1,6 +1,6 @@
 ## Client usage examples:
 
-### Print help
+### Print help:
 ```
 (thesis) hamza@hamza:~/master-thesis/client$ python scan.py -h
 usage: scan.py [-h] [--name NAME] [--target-port TARGET_PORT]
@@ -35,7 +35,7 @@ optional arguments:
   --latest LATEST       Get n number of recent scan results
 ```
 
-### Create Scan
+### Create Scan:
 ```
 (thesis) hamza@hamza:~/master-thesis/client$ python scan.py  create --name scan_two \
                                                                     --target-port 12 \
@@ -45,7 +45,7 @@ optional arguments:
 Scan 'scan_two' created successfully
 ```
 
-### Get Scan Info
+### Get Scan Info:
 ```
 (thesis) hamza@hamza:~/master-thesis/client$ python scan.py info --name scan_two
 Details for scan 'scan_two'
@@ -60,7 +60,7 @@ Details for scan 'scan_two'
             * Cron: */2 * * * *
 ```
 
-### Get Scans List
+### Get Scans List:
 ```
 (thesis) hamza@hamza:~/master-thesis/client$ python scan.py list
 Scans List:
@@ -70,7 +70,7 @@ Scans List:
 * scan_one
 ```
 
-### Get Scan Latest Result
+### Get Latest Scanning Results:
 ```
 (thesis) hamza@hamza:~/master-thesis/client$ python scan.py result --name scan_two
 
@@ -92,7 +92,7 @@ Scans List:
 
 ```
 
-### Get N latest scan results
+### Get N Latest Scanning Results:
 ```
 (thesis) hamza@hamza:~/master-thesis/client$ python scan.py result --name scan_two --latest=2
 
@@ -130,7 +130,7 @@ Scans List:
 
 ```
 
-### Delete scan
+### Delete Scan:
 ```
 (thesis) hamza@hamza:~/master-thesis/client$ python scan.py delete --name scan_two
 Scan 'scan_two' deleted successfully
