@@ -40,7 +40,7 @@ optional arguments:
                                                                     --target-port 12 \
                                                                     --target-hosts 10.10.0.0/16 192.168.0.0/16 \
                                                                     --request-payload abcabcabc \
-                                                                    --minute */2
+                                                                    --minute "*/2"
 Scan 'scan_two' created successfully
 ```
 
@@ -184,7 +184,7 @@ Details for scan 'scan_one'
 (thesis) hamza@hamza:~/master-thesis/client$ python scan.py update --name scan_one --target-hosts 10.0.0.0/16 \
 										   --target-port 54 \
                                                                                    --request-payload aaaaa \
-                                                                                   --minute */3
+                                                                                   --minute "*/3"
 Scan 'scan_one' updated successfully
 (thesis) hamza@hamza:~/master-thesis/client$ python scan.py info --name scan_one
 Details for scan 'scan_one'
