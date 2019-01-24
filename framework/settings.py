@@ -145,12 +145,19 @@ CELERY_RESULT_BACKEND = 'django-db'
 CELERY_TIMEZONE = "Europe/Berlin"
 
 
+# Comment out EMAIL_BACKEND if you want to really send emails.
+# If the following setting is enabled, the email content is just
+# logged to the console!
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 #Mail Settings
 EMAIL_USE_TLS = True
+
+# SMTP server address
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'hamza.zafar1993@gmail.com'
-EMAIL_RECEIVE_HOSTS = '11bscshzafar@seecs.edu.pk'
+EMAIL_HOST_USER = 'sender@gmail.com'
+EMAIL_RECEIVE_HOSTS = 'receiver1@gmail.com,receiver2@tum.de'
+
+# password of the sender
 EMAIL_HOST_PASSWORD = ''
 EMAIL_PORT = 587
