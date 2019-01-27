@@ -143,7 +143,7 @@ CELERY_BROKER_URL = 'amqp://localhost'
 CELERY_RESULT_BACKEND = 'django-db'
 #CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
 CELERY_TIMEZONE = "Europe/Berlin"
-
+CELERY_TRACK_STARTED = True
 
 # Comment out EMAIL_BACKEND if you want to really send emails.
 # If the following setting is enabled, the email content is just

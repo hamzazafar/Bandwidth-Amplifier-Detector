@@ -1,4 +1,3 @@
-# Create your tasks here
 from __future__ import absolute_import, unicode_literals
 from celery import shared_task
 
@@ -25,38 +24,39 @@ def scan(self, scan_name, address_range, target_port, version, request_hexdump,
     if version not in [4, 6]:
         raise ValueError("Invalid IP Address Version %s specified " % version)
 
-    zmap_udp_probe = "udp" if version == "4" else "ipv6_udp"
-
-    """
-    # TODO: don't scan until you get Planet Lab IP Address
+    zmap_udp_probe = "udp" if version == 4 else "ipv6_udp"
+    addresses = ' '.join(address_range)
     process = Popen(['zmap',
                      '-M', zmap_udp_probe,
-                     '-p', target_port,
+                     '-p', str(target_port),
                      '--probe-args=hex:%s' % request_hexdump,
                      '-f', 'saddr,udp_pkt_size',
                      '--output-filter="success = 1 && repeat = 0"',
-                     address_range.join(' '), stdout=PIPE, stderr=PIPE])
+                     addresses,],
+                     stdout=PIPE,
+                     stderr=PIPE)
 
     stdout, stderr = process.communicate()
 
-    if "ERROR" in stderr:
+    if process.returncode != 0:
         raise Exception(stderr)
 
-    """
+    #stdout = "saddr,udp_pkt_size\n"
+    #num_amps = random.randint(1,10)
+    #request_size = random.randint(20,60)
 
-    stdout = "saddr,udp_pkt_size\n"
-    num_amps = random.randint(1,10)
-    request_size = random.randint(20,60)
-
-    for i in range(num_amps):
-        saddr = "%s.%s.%s.%s" % (random.randint(0,255),random.randint(0,255),
-                                 random.randint(0,255),random.randint(0,255))
-        response_size = random.randint(70,10000)
-        stdout += "%s,%s\n" % (saddr, response_size)
+    request_size = len(request_hexdump)*2;
+    #for i in range(num_amps):
+    #    saddr = "%s.%s.%s.%s" % (random.randint(0,255),random.randint(0,255),
+    #                             random.randint(0,255),random.randint(0,255))
+    #    response_size = random.randint(70,10000)
+    #    stdout += "%s,%s\n" % (saddr, response_size)
 
     logger.info(stdout)
+    logger.info(stderr)
+
     amps = dict()
-    data = stdout.split('\n')
+    data = stdout.decode().split('\n')
     for row in data[1:]:
         if not row:
             continue
@@ -68,6 +68,7 @@ def scan(self, scan_name, address_range, target_port, version, request_hexdump,
     result= dict()
     result["scan_name"] = scan_name
     result["request_size"] = request_size
-    result["active_amplifiers_count"] = num_amps
+    #result["active_amplifiers_count"] = num_amps
+    result["active_amplifiers_count"] = len(amps)
     result["amplifiers"] = amps
     return result
