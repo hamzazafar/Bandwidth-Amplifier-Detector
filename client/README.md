@@ -199,3 +199,14 @@ Details for scan 'scan_one'
             * Cron: */3 * * * *
             
 ```
+
+### Killing a running scan:
+```
+(thesis) hamza@hamza:~/master-thesis/client$ python scan.py list-running
+
+Task ID: e6bde8ae-1ba2-4313-b766-a0bcb1dbc225
+Scan Args: {'scan_name': 'scan_two', 'address_range': ['10.10.0.0/24', '10.0.0.0/8'], 'target_port': 23, 'request_hexdump': 'sdfksopdkf', 'cron_str': '* * * * *', 'version': 4}
+
+(thesis) hamza@hamza:~/master-thesis/client$ python scan.py kill --task-id e6bde8ae-1ba2-4313-b766-a0bcb1dbc225
+Task 'e6bde8ae-1ba2-4313-b766-a0bcb1dbc225' is killed successfully
+```

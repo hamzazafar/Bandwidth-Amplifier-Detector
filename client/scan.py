@@ -2,6 +2,7 @@ import configparser
 import argparse
 import requests
 import sys
+import json
 
 from prettytable import PrettyTable
 
@@ -59,7 +60,9 @@ parser.add_argument("type",
                              "info",
                              "result",
                              "disable",
-                             "enable"))
+                             "enable",
+                             "list-running",
+                             "kill"))
 
 parser.add_argument("--name",
                     help="set name of scan",)
@@ -96,6 +99,9 @@ parser.add_argument("--month-of-year",
 
 parser.add_argument("--latest",
                     help="Get n number of latest scan results")
+
+parser.add_argument("--task-id",
+                    help="Task ID of the scan job")
 
 args = parser.parse_args()
 
@@ -307,3 +313,39 @@ elif args.type == "update":
     except requests.exceptions.RequestException as err:
         print(err)
         sys.exit(1)
+
+elif args.type == "list-running":
+
+    try:
+        url = "http://%s:%s/api/v1/scan/running" % (HOST, PORT)
+        res = requests.get(url)
+        data = res.json()
+
+        if len(data) == 0:
+            print("No running scans found")
+        else:
+            for obj in data:
+                print("\nTask ID: %s\nScan Args: %s\n" %(obj["id"], obj["kwargs"]))
+
+    except requests.exceptions.RequestException as err:
+        print(err)
+        sys.exit(1)
+
+elif args.type == "kill":
+    if not args.task_id:
+        parser.error("scan kill requires --task-id argument")
+
+    try:
+        url = "http://%s:%s/api/v1/scan/revoke/%s" % (HOST, PORT, args.task_id)
+        res = requests.get(url)
+        if res.status_code == 200:
+            print("Task '%s' is killed successfully" % args.task_id)
+        else:
+            print("Failed to kill task '%s'\n" % args.task_id)
+            print("Errors:")
+            pretty(res.json())
+
+    except requests.exceptions.RequestException as err:
+        print(err)
+        sys.exit(1)
+

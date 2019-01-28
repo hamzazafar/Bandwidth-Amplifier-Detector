@@ -11,7 +11,14 @@ from core.models.scan import ScanTimeSeriesResult
 
 from django_celery_beat.models import PeriodicTask
 
+from django_celery_results.models import TaskResult
+
+from celery.task.control import revoke
+from celery.task.control import inspect
+
 from django.shortcuts import get_list_or_404, get_object_or_404
+
+import json
 
 class ScanListCreateView(generics.ListCreateAPIView):
     queryset  = PeriodicTask.objects.all()
@@ -24,6 +31,41 @@ class ScanRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
 
     def put(self, request, *args, **kwargs):
         return self.partial_update(request, *args, **kwargs)
+
+
+@api_view(['GET'])
+def get_running_scans(request):
+    try:
+        i = inspect()
+        data = i.active()
+
+        if not data:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        running_scans = list()
+        for k,val in data.items():
+            for v in val:
+                running_scans.append(v)
+
+        return Response(status=status.HTTP_404_NOT_FOUND,
+                        data=running_scans)
+
+    except Exception as err:
+        return Response(status=status.HTTP_404_NOT_FOUND,
+                        data={"Details": str(err)})
+
+@api_view(['GET'])
+def revoke_scan(request, task_id):
+    try:
+        revoke(task_id,
+               terminate=True,
+               signal='SIGKILL')
+    except Exception as err:
+        return Response(status=status.HTTP_404_NOT_FOUND,
+                        data={"Details": str(err)})
+
+    return Response(status=status.HTTP_200_OK)
+
 
 @api_view(['GET'])
 def get_scan_results(request, name):

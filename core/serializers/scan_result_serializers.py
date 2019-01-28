@@ -2,15 +2,7 @@ from rest_framework import serializers
 
 from core.models.scan import ScanTimeSeriesResult
 
-from django_celery_results.models import TaskResult
-
 import json
-
-class TaskResultSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = TaskResult
-        fields = '__all__'
 
 class ScanResultSerializer(serializers.ModelSerializer):
     status = serializers.CharField(source='scan_result.status')

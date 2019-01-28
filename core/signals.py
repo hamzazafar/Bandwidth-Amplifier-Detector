@@ -24,11 +24,10 @@ def create_result(sender, instance, created, *args, **kwargs):
     add docs..
     """
     try:
-        if not (instance and created):
+        if not instance:
             return
 
-        if instance.task_name != 'core.tasks.scan':
-            logger.info("don't send emails for tasks other than scanning")
+        if instance.status in ["STARTED", "REVOKED"]:
             return
 
         if not EMAIL_RECEIVE_HOSTS:
@@ -40,12 +39,12 @@ def create_result(sender, instance, created, *args, **kwargs):
         EMAIL_RECEIVE_HOSTS_LIST = EMAIL_RECEIVE_HOSTS.split(',')
 
         res = json.loads(instance.result)
-        periodic_task = PeriodicTask.objects.get(name=res["scan_name"])
         if instance.status == 'SUCCESS':
             # save a new timeseries record
             active_amplifiers_count = res["active_amplifiers_count"]
             scan_name = res["scan_name"]
 
+            periodic_task = PeriodicTask.objects.get(name=res["scan_name"])
             scan_result_obj = ScanTimeSeriesResult(scan_name=scan_name,
                                                    active_amplifiers_count=active_amplifiers_count,
                                                    scan_result=instance,
@@ -81,6 +80,7 @@ def create_result(sender, instance, created, *args, **kwargs):
         elif instance.status == 'FAILURE':
             scan_name = instance.task_kwargs['scan_name']
 
+            periodic_task = PeriodicTask.objects.get(name=scan_name)
             scan_result_obj = ScanTimeSeriesResult(scan_name=scan_name,
                                                    active_amplifiers_count=0,
                                                    scan_result=instance,
@@ -89,8 +89,6 @@ def create_result(sender, instance, created, *args, **kwargs):
             scan_result_obj.save()
 
             subject = "Scan '%s' has failed " % scan_name
-            from_email = 'hamza.zafar1993@gmail.com'
-            to = '11bscshzafar@seecs.edu.pk'
 
             content = "Exception Type: %s\n" % res["exc_type"]
             content += "Exception Message: %s\n" % res["exc_message"]

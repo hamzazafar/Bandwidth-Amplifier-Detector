@@ -5,6 +5,8 @@ from celery.utils.log import get_task_logger
 
 from subprocess import Popen, PIPE
 
+from celery import states
+
 import random
 
 logger = get_task_logger(__name__)
@@ -12,6 +14,12 @@ logger = get_task_logger(__name__)
 @shared_task(bind=True)
 def scan(self, scan_name, address_range, target_port, version, request_hexdump,
          cron_str=''):
+
+    # set task status started
+    self.update_state(state=states.STARTED,
+                      meta={"task_name": self.name,
+                            "scan_name": scan_name})
+
     logger.info('Request: {0!r}'.format(self.request))
     logger.info("""
                 Scan Name: {0}
