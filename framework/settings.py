@@ -140,6 +140,8 @@ STATIC_URL = '/static/'
 CELERY_BROKER_URL = 'amqp://localhost'
 #CELERY_RESULT_BACKEND = 'rpc://'
 #CELERY_RESULT_BACKEND = 'db+mysql://django:django123@localhost/thesis'
+
+DJANGO_CELERY_RESULTS_TASK_ID_MAX_LENGTH=191
 CELERY_RESULT_BACKEND = 'django-db'
 #CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
 CELERY_TIMEZONE = "Europe/Berlin"
