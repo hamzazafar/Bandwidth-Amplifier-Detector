@@ -72,10 +72,10 @@ def scan(self, scan_name, address_range, target_port, version,
         amplifier, response_size = row.split(',')
         if amplifier not in amps:
             amps[amplifier] = dict()
-            amps[amplifier]["response_size"] = response_size
+            amps[amplifier]["response_size"] = int(response_size)
             amps[amplifier]["amplification_factor"] = round(int(response_size)/request_size,2)
         else:
-            amps[amplifier]["response_size"] += response_size
+            amps[amplifier]["response_size"] += int(response_size)
             amps[amplifier]["amplification_factor"] = round(int(amps[amplifier]["response_size"])/request_size,2)
 
     result= dict()
