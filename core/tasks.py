@@ -69,9 +69,13 @@ def scan(self, scan_name, address_range, target_port, version,
         if not row:
             continue
         amplifier, response_size = row.split(',')
-        amps[amplifier] = dict()
-        amps[amplifier]["response_size"] = response_size
-        amps[amplifier]["amplification_factor"] = round(int(response_size)/request_size,2)
+        if amplifier not in amps:
+            amps[amplifier] = dict()
+            amps[amplifier]["response_size"] = response_size
+            amps[amplifier]["amplification_factor"] = round(int(response_size)/request_size,2)
+        else:
+            amps[amplifier]["response_size"] += response_size
+            amps[amplifier]["amplification_factor"] = round(int(amps[amplifier]["response_size"])/request_size,2)
 
     result= dict()
     result["scan_name"] = scan_name
