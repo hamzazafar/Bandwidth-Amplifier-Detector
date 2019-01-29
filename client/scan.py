@@ -67,6 +67,10 @@ parser.add_argument("type",
 parser.add_argument("--name",
                     help="set name of scan",)
 
+
+parser.add_argument("--rate",
+                    help="Set send rate in packets/sec",)
+
 parser.add_argument("--target-port",
                     help="port number to scan",)
 
@@ -106,17 +110,21 @@ parser.add_argument("--task-id",
 args = parser.parse_args()
 
 if args.type == "create":
+    errors = ""
     if not args.name:
-        parser.error("scan create requires --name argument")
+        errors += "scan create requires --name argument"
 
     if not args.target_port:
-        parser.error("scan create requires --target-port argument")
+        errors += "scan create requires --target-port argument"
 
     if not args.target_hosts:
-        parser.error("scan create requires --target-hosts argument")
+        errors += "scan create requires --target-hosts argument"
 
     if not args.request_payload:
-        parser.error("scab create requires --request-payload argument")
+        errors += "scan create requires --request-payload argument"
+
+    if errors:
+        parser.error(errors)
 
     try:
         url = "http://%s:%s/api/v1/scan" % (HOST, PORT)
@@ -127,6 +135,9 @@ if args.type == "create":
         params['scan_args']['address_range'] = ','.join(args.target_hosts)
         params['scan_args']['target_port'] = args.target_port
         params['scan_args']['request_hexdump'] = args.request_payload
+
+        if args.rate:
+            params['scan_args']['packets_per_second'] = args.rate
 
         params['crontab'] = dict()
         params['crontab']['minute'] = args.minute
@@ -200,13 +211,15 @@ elif args.type == "info":
                      "* Target port: {4}\n" \
                      "* Request Hexdump: {5}\n" \
                      "* Cron: {6}\n" \
+                     "* Rate: {7}\n" \
                      .format(data["enabled"],
                              data["total_run_count"],
                              data["last_run_at"],
                              data["scan_args_data"]["address_range"],
                              data["scan_args_data"]["target_port"],
                              data["scan_args_data"]["request_hexdump"],
-                             data["scan_args_data"]["cron_str"])
+                             data["scan_args_data"]["cron_str"],
+                             data["scan_args_data"]["packets_per_second"])
 
             print(output)
         else:
@@ -284,6 +297,9 @@ elif args.type == "update":
 
         if args.request_payload:
             params['scan_args']['request_hexdump'] = args.request_payload
+
+        if args.rate:
+            params['scan_args']['packets_per_second'] = args.rate
 
         params['crontab'] = dict()
 

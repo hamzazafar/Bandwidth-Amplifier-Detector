@@ -12,9 +12,8 @@ import random
 logger = get_task_logger(__name__)
 
 @shared_task(bind=True)
-def scan(self, scan_name, address_range, target_port, version, request_hexdump,
-         cron_str=''):
-
+def scan(self, scan_name, address_range, target_port, version,
+         request_hexdump, packets_per_second, cron_str=''):
     # set task status started
     self.update_state(state=states.STARTED,
                       meta={"task_name": self.name,
@@ -39,6 +38,7 @@ def scan(self, scan_name, address_range, target_port, version, request_hexdump,
                      '-p', str(target_port),
                      '--probe-args=hex:%s' % request_hexdump,
                      '-f', 'saddr,udp_pkt_size',
+                     '-r', str(packets_per_second),
                      '--output-filter="success = 1 && repeat = 0"',
                      addresses,],
                      stdout=PIPE,

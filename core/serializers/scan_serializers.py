@@ -12,7 +12,7 @@ from ipaddress import ip_network
 import json
 
 CELERY_TIMEZONE = getattr(settings, "CELERY_TIMEZONE", "UTC")
-
+ZMAP_PACKETS_PER_SECOND = getattr(settings, "ZMAP_PACKETS_PER_SECOND")
 class CronSerializer(serializers.ModelSerializer):
 
     minute = serializers.CharField(max_length=240, required=False)
@@ -58,6 +58,9 @@ class ScanArgsSerializer(serializers.Serializer):
                                            write_only=True,
                                            required=True)
 
+    packets_per_second = serializers.IntegerField(default=ZMAP_PACKETS_PER_SECOND,
+                                                  write_only=True,
+                                                  required=False)
 
 class ScanSerializer(serializers.ModelSerializer):
 
@@ -110,6 +113,9 @@ class ScanSerializer(serializers.ModelSerializer):
         if "request_hexdump" in validated_scan_args:
             instance_kwargs["request_hexdump"] = validated_scan_args.get('request_hexdump')
 
+        if "packets_per_second" in validated_scan_args:
+            instance_kwargs["packets_per_second"] = validated_scan_args.get('packets_per_second')
+
         instance.kwargs = json.dumps(instance_kwargs)
         instance.save()
         return instance
@@ -144,6 +150,8 @@ class ScanSerializer(serializers.ModelSerializer):
         kwargs["address_range"] = validated_scan_args.pop('address_range').split(',')
         kwargs["target_port"] = validated_scan_args.pop('target_port')
         kwargs["request_hexdump"] = validated_scan_args.pop('request_hexdump')
+        kwargs["packets_per_second"] = validated_scan_args.pop('packets_per_second',
+                                                               ZMAP_PACKETS_PER_SECOND)
         kwargs["cron_str"] = cron_str
 
         # set the IP address version
