@@ -39,7 +39,7 @@ def scan(self, scan_name, address_range, target_port, version,
                      '--probe-args=hex:%s' % request_hexdump,
                      '-f', 'saddr,udp_pkt_size',
                      '-r', str(packets_per_second),
-                     '--output-filter="success = 1 && repeat = 0"',
+                     '--output-filter="success = 1"',
                      addresses,],
                      stdout=PIPE,
                      stderr=PIPE)
