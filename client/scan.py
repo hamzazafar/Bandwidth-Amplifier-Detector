@@ -112,16 +112,16 @@ args = parser.parse_args()
 if args.type == "create":
     errors = ""
     if not args.name:
-        errors += "scan create requires --name argument"
+        errors += "scan create requires --name argument\n"
 
     if not args.target_port:
-        errors += "scan create requires --target-port argument"
+        errors += "scan create requires --target-port argument\n"
 
     if not args.target_hosts:
-        errors += "scan create requires --target-hosts argument"
+        errors += "scan create requires --target-hosts argument\n"
 
     if not args.request_payload:
-        errors += "scan create requires --request-payload argument"
+        errors += "scan create requires --request-payload argument\n"
 
     if errors:
         parser.error(errors)
