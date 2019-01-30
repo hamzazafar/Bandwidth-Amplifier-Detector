@@ -45,7 +45,6 @@ class CronSerializer(serializers.ModelSerializer):
 class ScanArgsSerializer(serializers.Serializer):
 
     address_range = serializers.CharField(allow_blank=False,
-                                          max_length=255,
                                           validators=[address_range_validator],
                                           required=True,
                                           write_only=True)

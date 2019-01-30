@@ -34,14 +34,14 @@ def scan(self, scan_name, address_range, target_port, version,
     zmap_udp_probe = "udp" if version == 4 else "ipv6_udp"
     addresses = ' '.join(address_range)
 
-    cmd = ('zmap ',
-           '-M {0} ',
-           '-p {1} ',
-           '--probe-args=hex:{2} ',
-           '-f {3} ',
-           '-r {4} ',
-           '--output-module={5} ',
-           '--output-filter={6} ',
+    cmd = ('zmap '
+           '-M {0} '
+           '-p {1} '
+           '--probe-args=hex:{2} '
+           '-f {3} '
+           '-r {4} '
+           '--output-module={5} '
+           '--output-filter={6} '
            '{7}').format(zmap_udp_probe,
                              str(target_port),
                              request_hexdump,
