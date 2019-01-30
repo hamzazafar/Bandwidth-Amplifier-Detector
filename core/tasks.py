@@ -33,17 +33,27 @@ def scan(self, scan_name, address_range, target_port, version,
 
     zmap_udp_probe = "udp" if version == 4 else "ipv6_udp"
     addresses = ' '.join(address_range)
-    process = Popen(['zmap',
-                     '-M', zmap_udp_probe,
-                     '-p', str(target_port),
-                     '--probe-args=hex:%s' % request_hexdump,
-                     '-f', 'saddr,udp_pkt_size',
-                     '-r', str(packets_per_second),
-                     '--output-module=csv',
-                     '--output-filter="success = 1"',
-                     addresses,],
-                     stdout=PIPE,
-                     stderr=PIPE)
+
+    cmd = ('zmap ',
+           '-M {0} ',
+           '-p {1} ',
+           '--probe-args=hex:{2} ',
+           '-f {3} ',
+           '-r {4} ',
+           '--output-module={5} ',
+           '--output-filter={6} ',
+           '{7}').format(zmap_udp_probe,
+                             str(target_port),
+                             request_hexdump,
+                             'saddr,udp_pkt_size',
+                             str(packets_per_second),
+                             'csv',
+                             '"success = 1"',
+                             addresses)
+    process = Popen(cmd,
+                    shell=True,
+                    stdout=PIPE,
+                    stderr=PIPE)
 
     stdout, stderr = process.communicate()
 
