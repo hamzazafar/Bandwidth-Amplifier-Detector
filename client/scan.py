@@ -78,6 +78,9 @@ parser.add_argument("--target-hosts",
                     help="Space separated list of target address ranges in CIDR notaion",
                     nargs='+',)
 
+parser.add_argument("--target-hosts-file",
+                    help="path to file containing address ranges, one on every line")
+
 parser.add_argument("--request-payload",
                     help="HEX encoded request payload",)
 
@@ -117,8 +120,11 @@ if args.type == "create":
     if not args.target_port:
         errors += "scan create requires --target-port argument\n"
 
-    if not args.target_hosts:
-        errors += "scan create requires --target-hosts argument\n"
+    if not (args.target_hosts or args.target_hosts_file):
+        errors += "scan create requires --target-hosts or target-hosts-file argument\n"
+
+    if args.target_hosts_file and args.target_hosts:
+        parser.error("pass one of target-hosts-file or target-hosts argument but not both")
 
     if not args.request_payload:
         errors += "scan create requires --request-payload argument\n"
@@ -132,7 +138,14 @@ if args.type == "create":
         params['name'] = args.name
 
         params['scan_args'] = dict()
-        params['scan_args']['address_range'] = ','.join(args.target_hosts)
+        target_hosts_list = []
+        if args.target_hosts_file:
+            with open(args.target_hosts_file) as f:
+                target_hosts_list = [line.rstrip('\n') for line in f]
+        else:
+            target_hosts_list = args.target_hosts
+
+        params['scan_args']['address_range'] = ','.join(target_hosts_list)
         params['scan_args']['target_port'] = args.target_port
         params['scan_args']['request_hexdump'] = args.request_payload
 
@@ -284,13 +297,22 @@ elif args.type == "update":
     if not args.name:
         parser.error("scan update requires --name argument")
 
+    if args.target_hosts_file and args.target_hosts:
+        parser.error("pass one of target-hosts-file or target-hosts argument but not both")
+
     try:
         url = "http://%s:%s/api/v1/scan/%s" % (HOST, PORT, args.name)
         params = dict()
         params['scan_args'] = dict()
 
-        if args.target_hosts:
-            params['scan_args']['address_range'] = ','.join(args.target_hosts)
+        target_hosts_list = []
+        if args.target_hosts_file:
+            with open(args.target_hosts_file) as f:
+                target_hosts_list = [line.rstrip('\n') for line in f]
+        else:
+            target_hosts_list = args.target_hosts
+
+        params['scan_args']['address_range'] = ','.join(target_hosts_list)
 
         if args.target_port:
             params['scan_args']['target_port'] = args.target_port
