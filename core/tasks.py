@@ -103,7 +103,7 @@ def scan(self, scan_name, address_range, target_port, version,
 
 
     # filters the amps dict for hosts with BAF greater than 1
-    amplifiers = { k:v for k,v in amps.items() if val["amplification_factor"]>1 }
+    amplifiers = { k:v for k,v in amps.items() if v["amplification_factor"]>1 }
 
     result= dict()
     result["scan_name"] = scan_name
