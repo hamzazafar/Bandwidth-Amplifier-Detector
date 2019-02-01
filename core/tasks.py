@@ -10,7 +10,6 @@ from ipaddress import ip_network, ip_address
 from celery import states
 
 import random
-import base64
 
 logger = get_task_logger(__name__)
 
@@ -97,7 +96,7 @@ def scan(self, scan_name, address_range, target_port, version,
             amps[amplifier]["amplification_factor"] = round(amps[amplifier]["total_response_size"]/request_size, 2)
 
             response = dict()
-            response["response_hex_data"] = base64.b16encode(response_data)
+            response["response_hex_data"] = response_data
             response["response_size"] = int(response_size)
 
             amps[amplifier]["responses"].append(response)
