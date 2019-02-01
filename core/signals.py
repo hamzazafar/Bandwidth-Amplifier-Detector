@@ -54,7 +54,7 @@ def create_result(sender, instance, created, *args, **kwargs):
 
             for ip, details in res["amplifiers"].items():
                 obj = Amplifier(address=ip,
-                                response_size=details["response_size"],
+                                total_response_size=details["total_response_size"],
                                 amplification_factor=details["amplification_factor"],
                                 scan=scan_result_obj)
                 obj.save()
@@ -67,7 +67,7 @@ def create_result(sender, instance, created, *args, **kwargs):
             table.field_names = ["Amplifier", "Response Size", "Amplification Factor"]
 
             for ip, details in res["amplifiers"].items():
-                table.add_row([ip, details["response_size"], details["amplification_factor"]])
+                table.add_row([ip, details["total_response_size"], details["amplification_factor"]])
 
             table.sortby = "Amplification Factor"
             # sort in descending order

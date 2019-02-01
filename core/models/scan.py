@@ -26,7 +26,7 @@ class ScanTimeSeriesResult(models.Model):
 class Amplifier(models.Model):
 
     address = models.CharField(null=False, max_length=255)
-    response_size = models.IntegerField(null=False)
+    total_response_size = models.IntegerField(null=False)
     amplification_factor = models.IntegerField(null=False)
 
     # relations

@@ -40,7 +40,7 @@ def process_result(result):
         table.field_names = ["Amplifier", "Response Size", "Amplification Factor"]
 
         for ip, details in result["amplifiers"].items():
-            table.add_row([ip, details["response_size"], details["amplification_factor"]])
+            table.add_row([ip, details["total_response_size"], details["amplification_factor"]])
 
         table.sortby = "Amplification Factor"
         # sort in descending order

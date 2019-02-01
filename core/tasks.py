@@ -60,16 +60,7 @@ def scan(self, scan_name, address_range, target_port, version,
     if process.returncode != 0:
         raise Exception(stderr)
 
-    #stdout = "saddr,udp_pkt_size\n"
-    #num_amps = random.randint(1,10)
-    #request_size = random.randint(20,60)
-
     request_size = len(request_hexdump)*2;
-    #for i in range(num_amps):
-    #    saddr = "%s.%s.%s.%s" % (random.randint(0,255),random.randint(0,255),
-    #                             random.randint(0,255),random.randint(0,255))
-    #    response_size = random.randint(70,10000)
-    #    stdout += "%s,%s\n" % (saddr, response_size)
 
     logger.info(stdout)
     logger.info(stderr)
@@ -82,16 +73,15 @@ def scan(self, scan_name, address_range, target_port, version,
         amplifier, response_size = row.split(',')
         if amplifier not in amps:
             amps[amplifier] = dict()
-            amps[amplifier]["response_size"] = int(response_size)
+            amps[amplifier]["total_response_size"] = int(response_size)
             amps[amplifier]["amplification_factor"] = round(int(response_size)/request_size,2)
         else:
-            amps[amplifier]["response_size"] += int(response_size)
-            amps[amplifier]["amplification_factor"] = round(int(amps[amplifier]["response_size"])/request_size,2)
+            amps[amplifier]["total_response_size"] += int(response_size)
+            amps[amplifier]["amplification_factor"] = round(int(amps[amplifier]["total_response_size"])/request_size,2)
 
     result= dict()
     result["scan_name"] = scan_name
     result["request_size"] = request_size
-    #result["active_amplifiers_count"] = num_amps
     result["active_amplifiers_count"] = len(amps)
     result["amplifiers"] = amps
     return result

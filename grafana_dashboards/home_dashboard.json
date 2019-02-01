@@ -309,7 +309,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "select a.scan_name, c.address as \"Address\", c.response_size as \"Response Size\", c.amplification_factor as \"Bandwidth Amplification Factor\" from  core_scantimeseriesresult a join core_amplifier c on c.scan_id=a.id left outer join core_scantimeseriesresult b on a.scan_name=b.scan_name and a.created<b.created and a.status=\"SUCCESS\" and b.status=\"SUCCESS\" where b.scan_name is null order by a.created desc;",
+          "rawSql": "select a.scan_name, c.address as \"Address\", c.total_response_size as \"Response Size\", c.amplification_factor as \"Bandwidth Amplification Factor\" from  core_scantimeseriesresult a join core_amplifier c on c.scan_id=a.id left outer join core_scantimeseriesresult b on a.scan_name=b.scan_name and a.created<b.created and a.status=\"SUCCESS\" and b.status=\"SUCCESS\" where b.scan_name is null order by a.created desc;",
           "refId": "A",
           "select": [
             [
