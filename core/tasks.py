@@ -5,9 +5,12 @@ from celery.utils.log import get_task_logger
 
 from subprocess import Popen, PIPE
 
+from ipaddress import ip_network, ip_address
+
 from celery import states
 
 import random
+import base64
 
 logger = get_task_logger(__name__)
 
@@ -19,65 +22,89 @@ def scan(self, scan_name, address_range, target_port, version,
                       meta={"task_name": self.name,
                             "scan_name": scan_name})
 
-    logger.info('Request: {0!r}'.format(self.request))
-    logger.info("""
-                Scan Name: {0}
-                Address Range: {1}
-                UDP Port: {2}
-                IP Version:{3}
-                Hex Dump: {4}
-                """.format(scan_name, address_range, target_port, version, request_hexdump))
+    logger.debug('Request: {0!r}'.format(self.request))
+    logger.info(('Scan Name: {0}'
+                 'Address Range: {1}'
+                 'UDP Port: {2}'
+                 'IP Version:{3}'
+                 'Hex Dump: {4}').format(scan_name,
+                                         address_range,
+                                         target_port,
+                                         version,
+                                         request_hexdump))
 
     if version not in [4, 6]:
         raise ValueError("Invalid IP Address Version %s specified " % version)
 
-    zmap_udp_probe = "udp" if version == 4 else "ipv6_udp"
-    addresses = ' '.join(address_range)
+    request_size = len(request_hexdump)*2;
 
-    cmd = ('zmap '
-           '-M {0} '
-           '-p {1} '
-           '--probe-args=hex:{2} '
-           '-f {3} '
-           '-r {4} '
-           '--output-module={5} '
-           '--output-filter={6} '
-           '{7}').format(zmap_udp_probe,
+    zmap_udp_probe = "udp" if version == 4 else "ipv6_udp"
+    #addresses = ' '.join(address_range)
+
+    amps = dict()
+
+    for addr in address_range:
+        logger.info("Scanning address range: %s" % addr)
+
+        cmd = ('zmap '
+               '-M {0} '
+               '-p {1} '
+               '--probe-args=hex:{2} '
+               '-f {3} '
+               '-r {4} '
+               '--output-module={5} '
+               '--output-filter={6} '
+               '{7}').format(zmap_udp_probe,
                              str(target_port),
                              request_hexdump,
-                             'saddr,udp_pkt_size',
+                             'saddr,udp_pkt_size,data',
                              str(packets_per_second),
                              'csv',
                              '"success = 1"',
-                             addresses)
-    process = Popen(cmd,
-                    shell=True,
-                    stdout=PIPE,
-                    stderr=PIPE)
+                             addr)
+        process = Popen(cmd,
+                        shell=True,
+                        stdout=PIPE,
+                        stderr=PIPE)
 
-    stdout, stderr = process.communicate()
+        stdout, stderr = process.communicate()
 
-    if process.returncode != 0:
-        raise Exception(stderr)
+        if process.returncode != 0:
+            raise Exception(stderr)
 
-    request_size = len(request_hexdump)*2;
+        stdout = stdout.decode().split('\n')
+        logger.info(stdout)
 
-    logger.info(stdout)
-    logger.info(stderr)
+        logger.info(stderr.decode().split('\n'))
 
-    amps = dict()
-    data = stdout.decode().split('\n')
-    for row in data[1:]:
-        if not row:
-            continue
-        amplifier, response_size = row.split(',')
-        if amplifier not in amps:
-            amps[amplifier] = dict()
-            amps[amplifier]["total_response_size"] = int(response_size)
-            amps[amplifier]["amplification_factor"] = round(int(response_size)/request_size,2)
-        else:
-            amps[amplifier]["total_response_size"] += int(response_size)
-            amps[amplifier]["amplification_factor"] = round(int(amps[amplifier]["total_response_size"])/request_size,2)
+        total_response_size = 0
+        for row in stdout[1:]:
+            if not row:
+                continue
+            amplifier, response_size, response_data = row.split(',')
+            if amplifier not in amps:
+                amps[amplifier] = dict()
+                amps[amplifier]["responses"] = list()
+
+                net = ip_network(addr)
+
+                if ip_address(amplifier) not in net:
+                    amps[amplifier]["unsolicited_response"] = True
+                else:
+                    amps[amplifier]["unsolicited_response"] = False
+
+            response = dict()
+            response["response_hex_data"] = base64.b16encode(response_data)
+            response["response_size"] = int(response_size)
+
+            amps[amplifier]["responses"].append(response)
+
+            total_response_size += int(response_size)
+
+        amps[amplifier]["total_response_size"] = total_response_size
+        amps[amplifier]["amplification_factor"] = round(total_response_size/request_size, 2)
+
+
 
     result= dict()
     result["scan_name"] = scan_name

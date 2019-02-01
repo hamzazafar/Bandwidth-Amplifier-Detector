@@ -3,7 +3,7 @@ from django.dispatch import receiver
 from django.conf import settings
 from django_celery_results.models import TaskResult
 from django_celery_beat.models import PeriodicTask
-from core.models.scan import ScanTimeSeriesResult, Amplifier
+from core.models.scan import ScanTimeSeriesResult, Amplifier, Response
 from datetime import date
 from prettytable import PrettyTable
 
@@ -53,11 +53,20 @@ def create_result(sender, instance, created, *args, **kwargs):
             scan_result_obj.save()
 
             for ip, details in res["amplifiers"].items():
-                obj = Amplifier(address=ip,
-                                total_response_size=details["total_response_size"],
-                                amplification_factor=details["amplification_factor"],
-                                scan=scan_result_obj)
-                obj.save()
+                amp_obj = Amplifier(address=ip,
+                                    total_response_size=details["total_response_size"],
+                                    amplification_factor=details["amplification_factor"],
+                                    unsolicited_response=details["unsolicited_response"],
+                                    scan=scan_result_obj)
+                amp_obj.save()
+
+                for response in details["responses"]:
+                    res_obj = Response(response_hex_data=response["response_hex_data"],
+                                       response_size=response["response_size"],
+                                       amplifier=amp_obj)
+                    res_obj.save()
+
+
 
             # send email to administrator
             if active_amplifiers_count < 1:
