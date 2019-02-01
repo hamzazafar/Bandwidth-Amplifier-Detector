@@ -22,11 +22,12 @@ def scan(self, scan_name, address_range, target_port, version,
                             "scan_name": scan_name})
 
     logger.debug('Request: {0!r}'.format(self.request))
-    logger.info(('Scan Name: {0}'
-                 'Address Range: {1}'
-                 'UDP Port: {2}'
-                 'IP Version:{3}'
-                 'Hex Dump: {4}').format(scan_name,
+    logger.info('Scan "%s" has started\n' % scan_name)
+    logger.info(('Scan Name: {0}\n'
+                 'Address Range: {1}\n'
+                 'UDP Port: {2}\n'
+                 'IP Version:{3}\n'
+                 'Hex Dump: {4}\n').format(scan_name,
                                          address_range,
                                          target_port,
                                          version,
@@ -43,7 +44,7 @@ def scan(self, scan_name, address_range, target_port, version,
     amps = dict()
 
     for addr in address_range:
-        logger.info("Scanning address range: %s" % addr)
+        logger.info("Scanning address range: %s\n" % addr)
 
         cmd = ('zmap '
                '-M {0} '
@@ -69,13 +70,14 @@ def scan(self, scan_name, address_range, target_port, version,
         stdout, stderr = process.communicate()
 
         if process.returncode != 0:
-            raise Exception(stderr)
+            raise Exception(stderr.decode())
 
-        stdout = stdout.decode().split('\n')
+        stdout = stdout.decode()
         logger.info(stdout)
 
-        logger.info(stderr.decode().split('\n'))
+        logger.info(stderr.decode())
 
+        stdout = stdout.split('\n')
         for row in stdout[1:]:
             if not row:
                 continue
