@@ -77,7 +77,6 @@ def scan(self, scan_name, address_range, target_port, version,
 
         logger.info(stderr.decode().split('\n'))
 
-        total_response_size = 0
         for row in stdout[1:]:
             if not row:
                 continue
@@ -85,6 +84,7 @@ def scan(self, scan_name, address_range, target_port, version,
             if amplifier not in amps:
                 amps[amplifier] = dict()
                 amps[amplifier]["responses"] = list()
+                amps[amplifier]["total_response_size"] = 0
 
                 net = ip_network(addr)
 
@@ -93,22 +93,22 @@ def scan(self, scan_name, address_range, target_port, version,
                 else:
                     amps[amplifier]["unsolicited_response"] = False
 
+            amps[amplifier]["total_response_size"] += int(response_size)
+            amps[amplifier]["amplification_factor"] = round(amps[amplifier]["total_response_size"]/request_size, 2)
+
             response = dict()
             response["response_hex_data"] = base64.b16encode(response_data)
             response["response_size"] = int(response_size)
 
             amps[amplifier]["responses"].append(response)
 
-            total_response_size += int(response_size)
 
-        amps[amplifier]["total_response_size"] = total_response_size
-        amps[amplifier]["amplification_factor"] = round(total_response_size/request_size, 2)
-
-
+    # filters the amps dict for hosts with BAF greater than 1
+    amplifiers = { k:v for k,v in amps.items() if val["amplification_factor"]>1 }
 
     result= dict()
     result["scan_name"] = scan_name
     result["request_size"] = request_size
-    result["active_amplifiers_count"] = len(amps)
-    result["amplifiers"] = amps
+    result["active_amplifiers_count"] = len(amplifiers)
+    result["amplifiers"] = amplifiers
     return result
