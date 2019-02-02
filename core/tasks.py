@@ -39,69 +39,66 @@ def scan(self, scan_name, address_range, target_port, version,
     request_size = len(request_hexdump)*2;
 
     zmap_udp_probe = "udp" if version == 4 else "ipv6_udp"
-    #addresses = ' '.join(address_range)
+    addresses = ' '.join(address_range)
 
     amps = dict()
 
-    for addr in address_range:
-        logger.info("Scanning address range: %s\n" % addr)
+    cmd = ('zmap '
+           '-M {0} '
+           '-p {1} '
+           '--probe-args=hex:{2} '
+           '-f {3} '
+           '-r {4} '
+           '--output-module={5} '
+           '--output-filter={6} '
+           '{7}').format(zmap_udp_probe,
+                         str(target_port),
+                         request_hexdump,
+                         'saddr,udp_pkt_size,data',
+                         str(packets_per_second),
+                         'csv',
+                         '"success = 1"',
+                         addresses)
+    process = Popen(cmd,
+                    shell=True,
+                    stdout=PIPE,
+                    stderr=PIPE)
 
-        cmd = ('zmap '
-               '-M {0} '
-               '-p {1} '
-               '--probe-args=hex:{2} '
-               '-f {3} '
-               '-r {4} '
-               '--output-module={5} '
-               '--output-filter={6} '
-               '{7}').format(zmap_udp_probe,
-                             str(target_port),
-                             request_hexdump,
-                             'saddr,udp_pkt_size,data',
-                             str(packets_per_second),
-                             'csv',
-                             '"success = 1"',
-                             addr)
-        process = Popen(cmd,
-                        shell=True,
-                        stdout=PIPE,
-                        stderr=PIPE)
+    stdout, stderr = process.communicate()
 
-        stdout, stderr = process.communicate()
+    if process.returncode != 0:
+        raise Exception(stderr.decode())
 
-        if process.returncode != 0:
-            raise Exception(stderr.decode())
+    stdout = stdout.decode()
+    logger.info(stdout)
 
-        stdout = stdout.decode()
-        logger.info(stdout)
+    logger.info(stderr.decode())
 
-        logger.info(stderr.decode())
+    stdout = stdout.split('\n')
+    for row in stdout[1:]:
+        if not row:
+            continue
+        amplifier, response_size, response_data = row.split(',')
+        if amplifier not in amps:
+            amps[amplifier] = dict()
+            amps[amplifier]["responses"] = list()
+            amps[amplifier]["total_response_size"] = 0
+            amps[amplifier]["unsolicited_response"] = True
 
-        stdout = stdout.split('\n')
-        for row in stdout[1:]:
-            if not row:
-                continue
-            amplifier, response_size, response_data = row.split(',')
-            if amplifier not in amps:
-                amps[amplifier] = dict()
-                amps[amplifier]["responses"] = list()
-                amps[amplifier]["total_response_size"] = 0
-
+            amplifier_ip_address_obj = ip_address(amplifier)
+            for addr in address_range:
                 net = ip_network(addr)
-
-                if ip_address(amplifier) not in net:
-                    amps[amplifier]["unsolicited_response"] = True
-                else:
+                if amplifier_ip_address_obj in net:
                     amps[amplifier]["unsolicited_response"] = False
 
-            amps[amplifier]["total_response_size"] += int(response_size)
-            amps[amplifier]["amplification_factor"] = round(amps[amplifier]["total_response_size"]/request_size, 2)
+        amps[amplifier]["total_response_size"] += int(response_size)
+        amps[amplifier]["amplification_factor"] = round(amps[amplifier]["total_response_size"]/request_size, 2)
 
-            response = dict()
-            response["response_hex_data"] = response_data
-            response["response_size"] = int(response_size)
+        response = dict()
+        response["response_hex_data"] = response_data
+        response["response_size"] = int(response_size)
 
-            amps[amplifier]["responses"].append(response)
+        amps[amplifier]["responses"].append(response)
 
 
     # filters the amps dict for hosts with BAF greater than 1
