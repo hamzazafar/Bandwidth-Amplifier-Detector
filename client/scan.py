@@ -37,10 +37,16 @@ def process_result(result):
         output += "* Number of Amplifiers: %s\n" % len(result["amplifiers"])
 
         table = PrettyTable()
-        table.field_names = ["Amplifier", "Response Size", "Amplification Factor"]
+        table.field_names = ["Amplifier",
+                             "Response Size",
+                             "Amplification Factor",
+                             "Unsolicited Response"]
 
         for ip, details in result["amplifiers"].items():
-            table.add_row([ip, details["total_response_size"], details["amplification_factor"]])
+            table.add_row([ip,
+                           details["total_response_size"],
+                           details["amplification_factor"],
+                           details["unsolicited_response"]])
 
         table.sortby = "Amplification Factor"
         # sort in descending order
@@ -109,6 +115,11 @@ parser.add_argument("--latest",
 
 parser.add_argument("--task-id",
                     help="Task ID of the scan job")
+
+parser.add_argument("--raw",
+                    action="store_true",
+                    default=False,
+                    help="print raw json data")
 
 args = parser.parse_args()
 
@@ -258,13 +269,16 @@ elif args.type == "result":
             if len(data) == 0:
                 print("No results found for scan %s" % args.name)
             else:
-                output = "\n"
-                if isinstance(data, list):
-                    for result in data:
-                        output += process_result(result)
+                if args.raw:
+                    print(json.dumps(data, indent=4, sort_keys=True))
                 else:
-                    output += process_result(data)
-                print(output)
+                    output = "\n"
+                    if isinstance(data, list):
+                        for result in data:
+                            output += process_result(result)
+                    else:
+                        output += process_result(data)
+                    print(output)
         else:
             print("Failed to get result for scan '%s'\n" % args.name)
             print("Errors:")
