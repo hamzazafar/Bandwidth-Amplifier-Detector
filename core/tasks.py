@@ -62,13 +62,27 @@ def scan(self, scan_name, address_range, target_port, version,
                                           'csv',
                                           '"success = 1"',
                                           ZMAP_COMMAND)
+
+    if version == 4:
+        cmd += addresses
+    else:
+        cmd += ('--ipv6-source-ip=2001:4ca0:108:42::7 '
+                '--ipv6-target-file=- ')
     process = Popen(cmd,
                     shell=True,
                     stdout=PIPE,
                     stderr=PIPE,
                     stdin=PIPE)
 
-    stdout, stderr = process.communicate(input=addresses.encode())
+    logger.info("ZMap Command: %s" % cmd)
+    stdout = ''
+    stderr = ''
+    if version == 4:
+        stdout, stderr = process.communicate()
+    else:
+        addresses = "'%s'"%addresses.strip()
+        stdout, stderr = process.communicate(input=addresses.encode())
+
 
     if process.returncode != 0:
         raise Exception(stderr.decode())
