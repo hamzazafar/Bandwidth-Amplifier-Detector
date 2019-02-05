@@ -136,6 +136,9 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+# path to zmap command e.g /usr/bin/zmap
+ZMAP_PATH = '/usr/sbin/zmap'
+
 # Celery settings
 CELERY_BROKER_URL = 'amqp://localhost'
 #CELERY_RESULT_BACKEND = 'rpc://'

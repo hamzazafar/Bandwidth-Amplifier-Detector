@@ -5,11 +5,15 @@ from celery.utils.log import get_task_logger
 
 from subprocess import Popen, PIPE
 
+from django.conf import settings
+
 from ipaddress import ip_network, ip_address
 
 from celery import states
 
 import random
+
+ZMAP_COMMAND = getattr(settings, 'ZMAP_PATH', 'zmap')
 
 logger = get_task_logger(__name__)
 
@@ -43,28 +47,28 @@ def scan(self, scan_name, address_range, target_port, version,
 
     amps = dict()
 
-    cmd = ('zmap '
+    cmd = ('{7} '
            '-M {0} '
            '-p {1} '
            '--probe-args=hex:{2} '
            '-f {3} '
            '-r {4} '
            '--output-module={5} '
-           '--output-filter={6} '
-           '{7}').format(zmap_udp_probe,
-                         str(target_port),
-                         request_hexdump,
-                         'saddr,udp_pkt_size,data',
-                         str(packets_per_second),
-                         'csv',
-                         '"success = 1"',
-                         addresses)
+           '--output-filter={6} ').format(zmap_udp_probe,
+                                          str(target_port),
+                                          request_hexdump,
+                                          'saddr,udp_pkt_size,data',
+                                          str(packets_per_second),
+                                          'csv',
+                                          '"success = 1"',
+                                          ZMAP_COMMAND)
     process = Popen(cmd,
                     shell=True,
                     stdout=PIPE,
-                    stderr=PIPE)
+                    stderr=PIPE,
+                    stdin=PIPE)
 
-    stdout, stderr = process.communicate()
+    stdout, stderr = process.communicate(input=addresses)
 
     if process.returncode != 0:
         raise Exception(stderr.decode())
