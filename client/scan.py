@@ -319,6 +319,9 @@ elif args.type == "update":
         params = dict()
         params['scan_args'] = dict()
 
+        basic_args_modified = False
+        crontab_modified = False
+
         target_hosts_list = []
         if args.target_hosts_file:
             with open(args.target_hosts_file) as f:
