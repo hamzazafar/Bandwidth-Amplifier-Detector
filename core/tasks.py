@@ -43,7 +43,6 @@ def scan(self, scan_name, address_range, target_port, version,
     request_size = len(request_hexdump)*2;
 
     zmap_udp_probe = "udp" if version == 4 else "ipv6_udp"
-    addresses = ' '.join(address_range)
 
     amps = dict()
 
@@ -64,6 +63,7 @@ def scan(self, scan_name, address_range, target_port, version,
                                           ZMAP_COMMAND)
 
     if version == 4:
+        addresses = ' '.join(address_range)
         cmd += addresses
     else:
         cmd += ('--ipv6-source-ip=2001:4ca0:108:42::7 '
@@ -80,7 +80,11 @@ def scan(self, scan_name, address_range, target_port, version,
     if version == 4:
         stdout, stderr = process.communicate()
     else:
-        addresses = "'%s'"%addresses.strip()
+        addresses = ""
+        for net in address_range:
+            for host in ip_nework(net):
+                addresses += str(host)
+
         stdout, stderr = process.communicate(input=addresses.encode())
 
 
