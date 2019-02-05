@@ -68,7 +68,7 @@ def scan(self, scan_name, address_range, target_port, version,
                     stderr=PIPE,
                     stdin=PIPE)
 
-    stdout, stderr = process.communicate(input=addresses)
+    stdout, stderr = process.communicate(input=addresses.encode())
 
     if process.returncode != 0:
         raise Exception(stderr.decode())
