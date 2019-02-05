@@ -77,6 +77,8 @@ class ScanSerializer(serializers.ModelSerializer):
         return json.loads(obj.kwargs)
 
     def update(self, instance, validated_data):
+        instance.enabled = validated_data.pop("enabled", instance.enabled)
+
         cron_data = validated_data.pop("crontab", dict())
         cron_minute = cron_data.get("minute", instance.crontab.minute)
         cron_hour = cron_data.get("hour", instance.crontab.hour)
