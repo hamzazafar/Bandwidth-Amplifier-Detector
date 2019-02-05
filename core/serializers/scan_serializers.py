@@ -100,7 +100,7 @@ class ScanSerializer(serializers.ModelSerializer):
                                                               timezone=CELERY_TIMEZONE)
         instance.crontab = crontab_obj
 
-        validated_scan_args = validated_data.pop('scan_args')
+        validated_scan_args = validated_data.pop('scan_args', dict())
 
         if "address_range" in validated_scan_args:
             instance_kwargs["address_range"] = validated_scan_args.get('address_range').split(',')
