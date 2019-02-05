@@ -82,8 +82,8 @@ def scan(self, scan_name, address_range, target_port, version,
     else:
         addresses = ""
         for net in address_range:
-            for host in ip_nework(net):
-                addresses += str(host)
+            for host in ip_network(net):
+                addresses += "%s\n" % str(host)
 
         stdout, stderr = process.communicate(input=addresses.encode())
 
