@@ -326,7 +326,8 @@ elif args.type == "update":
         else:
             target_hosts_list = args.target_hosts
 
-        params['scan_args']['address_range'] = ','.join(target_hosts_list)
+        if target_hosts_list:
+            params['scan_args']['address_range'] = ','.join(target_hosts_list)
 
         if args.target_port:
             params['scan_args']['target_port'] = args.target_port
