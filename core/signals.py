@@ -54,6 +54,7 @@ def create_result(sender, instance, created, *args, **kwargs):
 
             for ip, details in res["amplifiers"].items():
                 amp_obj = Amplifier(address=ip,
+                                    destination_address=details["destination_address"],
                                     total_response_size=details["total_response_size"],
                                     amplification_factor=details["amplification_factor"],
                                     unsolicited_response=details["unsolicited_response"],
@@ -61,8 +62,12 @@ def create_result(sender, instance, created, *args, **kwargs):
                 amp_obj.save()
 
                 for response in details["responses"]:
-                    res_obj = Response(response_hex_data=response["response_hex_data"],
+                    res_obj = Response(aresponse_hex_data=response["response_hex_data"],
                                        response_size=response["response_size"],
+                                       response_ipid=response["response_ipid"],
+                                       response_ttl=response["response_ttl"],
+                                       response_sport=response["response_sport"],
+                                       response_dport=response["response_dport"],
                                        amplifier=amp_obj)
                     res_obj.save()
 

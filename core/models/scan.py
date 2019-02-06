@@ -28,7 +28,7 @@ class Amplifier(models.Model):
     total_response_size = models.IntegerField(null=False)
     amplification_factor = models.IntegerField(null=False)
     unsolicited_response = models.BooleanField(default=False)
-
+    destination_address = models.CharField(null=False, max_length=255)
     # relations
     scan = models.ForeignKey(ScanTimeSeriesResult,
                              related_name='amplifiers',
@@ -38,6 +38,10 @@ class Response(models.Model):
 
     response_hex_data = models.TextField(null=False)
     response_size = models.IntegerField(null=False)
+    response_ipid = models.IntegerField(null=False)
+    response_ttl = models.IntegerField(null=False)
+    response_sport = models.IntegerField(null=False)
+    response_dport = models.IntegerField(null=False)
 
     #relations
     amplifier = models.ForeignKey(Amplifier,

@@ -56,7 +56,7 @@ def scan(self, scan_name, address_range, target_port, version,
            '--output-filter={6} ').format(zmap_udp_probe,
                                           str(target_port),
                                           request_hexdump,
-                                          'saddr,udp_pkt_size,data',
+                                          'saddr,daddr,ipid,ttl,sport,dport,udp_pkt_size,data',
                                           str(packets_per_second),
                                           'csv',
                                           '"success = 1"',
@@ -100,12 +100,13 @@ def scan(self, scan_name, address_range, target_port, version,
     for row in stdout[1:]:
         if not row:
             continue
-        amplifier, response_size, response_data = row.split(',')
+        amplifier, daddr, ipid, ttl, sport, dport, response_size, response_data = row.split(',')
         if amplifier not in amps:
             amps[amplifier] = dict()
             amps[amplifier]["responses"] = list()
             amps[amplifier]["total_response_size"] = 0
             amps[amplifier]["unsolicited_response"] = True
+            amps[amplifier]["destination_address"] = daddr
 
             amplifier_ip_address_obj = ip_address(amplifier)
             for addr in address_range:
@@ -117,6 +118,10 @@ def scan(self, scan_name, address_range, target_port, version,
         amps[amplifier]["amplification_factor"] = round(amps[amplifier]["total_response_size"]/request_size, 2)
 
         response = dict()
+        response["response_ipid"] = int(ipid)
+        response["response_ttl"] = int(ttl)
+        response["response_sport"] = int(sport)
+        response["response_dport"] = int(dport)
         response["response_hex_data"] = response_data
         response["response_size"] = int(response_size)
 
