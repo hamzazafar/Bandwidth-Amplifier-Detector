@@ -62,7 +62,7 @@ def create_result(sender, instance, created, *args, **kwargs):
                 amp_obj.save()
 
                 for response in details["responses"]:
-                    res_obj = Response(aresponse_hex_data=response["response_hex_data"],
+                    res_obj = Response(response_hex_data=response["response_hex_data"],
                                        response_size=response["response_size"],
                                        response_ipid=response["response_ipid"],
                                        response_ttl=response["response_ttl"],

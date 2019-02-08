@@ -17,6 +17,21 @@ ZMAP_COMMAND = getattr(settings, 'ZMAP_PATH', 'zmap')
 
 logger = get_task_logger(__name__)
 
+def is_unsolicited_response(alist, item):
+    first = 0
+    last = len(alist)-1
+
+    while first<=last:
+        midpoint = (first + last)//2
+        if alist[midpoint] == item:
+            return False
+        else:
+            if item < alist[midpoint]:
+                last = midpoint-1
+            else:
+                first = midpoint+1
+    return True
+
 @shared_task(bind=True)
 def scan(self, scan_name, address_range, target_port, version,
          request_hexdump, packets_per_second, cron_str=''):
@@ -96,6 +111,9 @@ def scan(self, scan_name, address_range, target_port, version,
 
     logger.info(stderr.decode())
 
+    scanned_addresses_list = [int(host) for net in address_range for host in ip_network(net).hosts()]
+    scanned_addresses_list.sort()
+
     stdout = stdout.split('\n')
     for row in stdout[1:]:
         if not row:
@@ -105,14 +123,9 @@ def scan(self, scan_name, address_range, target_port, version,
             amps[amplifier] = dict()
             amps[amplifier]["responses"] = list()
             amps[amplifier]["total_response_size"] = 0
-            amps[amplifier]["unsolicited_response"] = True
             amps[amplifier]["destination_address"] = daddr
 
-            amplifier_ip_address_obj = ip_address(amplifier)
-            for addr in address_range:
-                net = ip_network(addr)
-                if amplifier_ip_address_obj in net:
-                    amps[amplifier]["unsolicited_response"] = False
+            amps[amplifier]["unsolicited_response"] = is_unsolicited_response(scanned_addresses_list, int(ip_address(amplifier)))
 
         amps[amplifier]["total_response_size"] += int(response_size)
         amps[amplifier]["amplification_factor"] = round(amps[amplifier]["total_response_size"]/request_size, 2)
