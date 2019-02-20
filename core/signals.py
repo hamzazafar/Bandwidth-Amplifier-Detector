@@ -44,9 +44,20 @@ def create_result(sender, instance, created, *args, **kwargs):
             active_amplifiers_count = res["active_amplifiers_count"]
             scan_name = res["scan_name"]
 
+            private_amplifiers_count = 0
+            public_amplifiers_count = 0
+
+            for ip, details in res["amplifiers"].items():
+                if details["private_address"]:
+                    private_amplifiers_count += 1
+                else:
+                    public_amplifiers_count += 1
+
             periodic_task = PeriodicTask.objects.get(name=res["scan_name"])
             scan_result_obj = ScanTimeSeriesResult(scan_name=scan_name,
                                                    active_amplifiers_count=active_amplifiers_count,
+                                                   private_amplifiers_count=private_amplifiers_count,
+                                                   public_amplifiers_count=public_amplifiers_count,
                                                    scan_result=instance,
                                                    status=instance.status,
                                                    periodic_task=periodic_task)

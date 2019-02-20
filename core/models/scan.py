@@ -11,6 +11,8 @@ class ScanTimeSeriesResult(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     scan_name = models.CharField(null=False, max_length=255)
     active_amplifiers_count = models.IntegerField(null=False)
+    private_amplifiers_count = models.IntegerField(null=False)
+    public_amplifiers_count = models.IntegerField(null=False)
     status = models.CharField(null=False, max_length=255)
 
     # relations
