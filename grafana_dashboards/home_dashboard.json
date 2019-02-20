@@ -156,8 +156,8 @@
       "description": "Time series displays the active amplifier counts from the last successful scanning jobs",
       "fill": 1,
       "gridPos": {
-        "h": 9,
-        "w": 11,
+        "h": 7,
+        "w": 6,
         "x": 0,
         "y": 6
       },
@@ -174,12 +174,12 @@
         "values": false
       },
       "lines": true,
-      "linewidth": 1,
+      "linewidth": 2,
       "links": [],
       "nullPointMode": "null",
       "percentage": false,
-      "pointradius": 5,
-      "points": false,
+      "pointradius": 2,
+      "points": true,
       "renderer": "flot",
       "seriesOverrides": [],
       "spaceLength": 10,
@@ -273,8 +273,8 @@
       "scroll": true,
       "showHeader": true,
       "sort": {
-        "col": 0,
-        "desc": true
+        "col": null,
+        "desc": false
       },
       "styles": [
         {
@@ -282,8 +282,8 @@
           "dateFormat": "YYYY-MM-DD HH:mm:ss",
           "link": true,
           "linkTargetBlank": true,
-          "linkTooltip": "http://localhost:3000/d/MXStvkQmk/test_dash?orgId=1&var-scan_name=${__cell}",
-          "linkUrl": "http://localhost:3000/d/MXStvkQmk/test_dash?orgId=1&var-scan_name=${__cell}",
+          "linkTooltip": "d/MXStvkQmk/scan-details?orgId=1&var-scan_name=${__cell}",
+          "linkUrl": "d/MXStvkQmk/scan-details?orgId=1&var-scan_name=${__cell}",
           "mappingType": 1,
           "pattern": "scan_name",
           "type": "string"
@@ -309,7 +309,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "select a.scan_name, c.address as \"Address\", c.total_response_size as \"Response Size\", c.amplification_factor as \"Bandwidth Amplification Factor\" from  core_scantimeseriesresult a join core_amplifier c on c.scan_id=a.id left outer join core_scantimeseriesresult b on a.scan_name=b.scan_name and a.created<b.created and a.status=\"SUCCESS\" and b.status=\"SUCCESS\" where b.scan_name is null order by a.created desc;",
+          "rawSql": "select a.scan_name, c.address as \"Address\", if(c.private_address, \"Private\", \"Public\") as \"Address Type\", c.amplification_factor as \"Bandwidth Amplification Factor\" from  core_scantimeseriesresult a join core_amplifier c on c.scan_id=a.id left outer join core_scantimeseriesresult b on a.scan_name=b.scan_name and a.created<b.created and a.status=\"SUCCESS\" and b.status=\"SUCCESS\" where b.scan_name is null order by a.created desc;",
           "refId": "A",
           "select": [
             [
@@ -336,7 +336,7 @@
       "type": "table"
     }
   ],
-  "refresh": "5s",
+  "refresh": false,
   "schemaVersion": 16,
   "style": "dark",
   "tags": [],
@@ -366,5 +366,5 @@
   "timezone": "browser",
   "title": "Home",
   "uid": "17TOXPUik",
-  "version": 30
+  "version": 11
 }
