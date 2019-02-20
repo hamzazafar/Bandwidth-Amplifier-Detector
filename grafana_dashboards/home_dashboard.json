@@ -38,8 +38,8 @@
         "thresholdMarkers": false
       },
       "gridPos": {
-        "h": 5,
-        "w": 4,
+        "h": 4,
+        "w": 3,
         "x": 0,
         "y": 0
       },
@@ -137,11 +137,247 @@
       "valueName": "avg"
     },
     {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorValue": true,
+      "colors": [
+        "#629e51",
+        "#890f02",
+        "#890f02"
+      ],
+      "datasource": "MySQL",
+      "description": "Amplifiers detected in private address space.",
+      "format": "none",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": false
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 3,
+        "x": 3,
+        "y": 0
+      },
+      "id": 13,
+      "interval": "",
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false
+      },
+      "tableColumn": "sum(a.private_amplifiers_count)",
+      "targets": [
+        {
+          "format": "table",
+          "group": [
+            {
+              "params": [
+                "$__interval",
+                "none"
+              ],
+              "type": "time"
+            }
+          ],
+          "hide": false,
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "select sum(a.private_amplifiers_count) from core_scantimeseriesresult a left outer join core_scantimeseriesresult b on a.scan_name=b.scan_name and a.created<b.created and a.status=\"SUCCESS\" and b.status=\"SUCCESS\" where b.scan_name is null and a.status=\"SUCCESS\" order by a.created desc;",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "active_amplifiers_count"
+                ],
+                "type": "column"
+              },
+              {
+                "params": [
+                  "sum"
+                ],
+                "type": "aggregate"
+              },
+              {
+                "params": [
+                  "active_amplifiers_count"
+                ],
+                "type": "alias"
+              }
+            ]
+          ],
+          "table": "core_scantimeseriesresult",
+          "timeColumn": "active_amplifiers_count",
+          "timeColumnType": "int",
+          "where": []
+        }
+      ],
+      "thresholds": "",
+      "title": "Private Amplifiers",
+      "type": "singlestat",
+      "valueFontSize": "200%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "avg"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorValue": true,
+      "colors": [
+        "#629e51",
+        "#890f02",
+        "#890f02"
+      ],
+      "datasource": "MySQL",
+      "description": "Amplifiers detected in public address space.",
+      "format": "none",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": false
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 3,
+        "x": 6,
+        "y": 0
+      },
+      "id": 14,
+      "interval": "",
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false
+      },
+      "tableColumn": "sum(a.active_amplifiers_count)",
+      "targets": [
+        {
+          "format": "table",
+          "group": [
+            {
+              "params": [
+                "$__interval",
+                "none"
+              ],
+              "type": "time"
+            }
+          ],
+          "hide": false,
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "select sum(a.active_amplifiers_count) from core_scantimeseriesresult a left outer join core_scantimeseriesresult b on a.scan_name=b.scan_name and a.created<b.created and a.status=\"SUCCESS\" and b.status=\"SUCCESS\" where b.scan_name is null and a.status=\"SUCCESS\" order by a.created desc;",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "active_amplifiers_count"
+                ],
+                "type": "column"
+              },
+              {
+                "params": [
+                  "sum"
+                ],
+                "type": "aggregate"
+              },
+              {
+                "params": [
+                  "active_amplifiers_count"
+                ],
+                "type": "alias"
+              }
+            ]
+          ],
+          "table": "core_scantimeseriesresult",
+          "timeColumn": "active_amplifiers_count",
+          "timeColumnType": "int",
+          "where": []
+        }
+      ],
+      "thresholds": "",
+      "title": "Public Amplifiers",
+      "type": "singlestat",
+      "valueFontSize": "200%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "avg"
+    },
+    {
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 5
+        "y": 4
       },
       "id": 12,
       "title": "Row title",
@@ -156,10 +392,10 @@
       "description": "Time series displays the active amplifier counts from the last successful scanning jobs",
       "fill": 1,
       "gridPos": {
-        "h": 7,
-        "w": 6,
+        "h": 10,
+        "w": 12,
         "x": 0,
-        "y": 6
+        "y": 5
       },
       "id": 8,
       "legend": {
@@ -262,10 +498,10 @@
       "description": "Display amplifier details from last successful scanning jobs",
       "fontSize": "100%",
       "gridPos": {
-        "h": 9,
-        "w": 11,
+        "h": 10,
+        "w": 12,
         "x": 12,
-        "y": 6
+        "y": 5
       },
       "id": 10,
       "links": [],
@@ -366,5 +602,5 @@
   "timezone": "browser",
   "title": "Home",
   "uid": "17TOXPUik",
-  "version": 11
+  "version": 12
 }
