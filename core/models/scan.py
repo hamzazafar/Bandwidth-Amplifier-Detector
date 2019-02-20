@@ -26,7 +26,7 @@ class Amplifier(models.Model):
 
     address = models.CharField(null=False, max_length=255)
     total_response_size = models.IntegerField(null=False)
-    amplification_factor = models.IntegerField(null=False)
+    amplification_factor = models.FloatField(null=False)
     unsolicited_response = models.BooleanField(default=False)
     destination_address = models.CharField(null=False, max_length=255)
     # relations
