@@ -151,6 +151,9 @@ CELERY_TIMEZONE = "Europe/Berlin"
 CELERY_TRACK_STARTED = True
 
 
+# set ipv6 src address
+#IPV6_SRC_ADDR="2001:4ca0:108:42::7"
+
 ZMAP_PACKETS_PER_SECOND = 100
 
 # Comment out EMAIL_BACKEND if you want to really send emails.

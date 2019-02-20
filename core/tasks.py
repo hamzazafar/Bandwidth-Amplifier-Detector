@@ -14,6 +14,7 @@ from celery import states
 import random
 
 ZMAP_COMMAND = getattr(settings, 'ZMAP_PATH', 'zmap')
+IPV6_SRC_ADDR = getattr(settings, 'IPV6_SRC_ADDR', None)
 
 logger = get_task_logger(__name__)
 
@@ -81,8 +82,12 @@ def scan(self, scan_name, address_range, target_port, version,
         addresses = ' '.join(address_range)
         cmd += addresses
     else:
-        cmd += ('--ipv6-source-ip=2001:4ca0:108:42::7 '
-                '--ipv6-target-file=- ')
+        if IPV6_SRC_ADDR is None:
+            raise Exception("IPV6_SRC_ADDR is not set in configuration")
+
+        cmd += '--ipv6-source-ip=%s ' % IPV6_SRC_ADDR
+        cmd += '--ipv6-target-file=- ')
+
     process = Popen(cmd,
                     shell=True,
                     stdout=PIPE,
