@@ -79,10 +79,18 @@ def create_result(sender, instance, created, *args, **kwargs):
                 return
 
             table = PrettyTable()
-            table.field_names = ["Amplifier", "Response Size", "Amplification Factor"]
+            table.field_names = ["Amplifier",
+                                 "Response Size",
+                                 "Amplification Factor",
+                                 "Unsolicited Response",
+                                 "Address Type"]
 
             for ip, details in res["amplifiers"].items():
-                table.add_row([ip, details["total_response_size"], details["amplification_factor"]])
+                table.add_row([ip,
+                               details["total_response_size"],
+                               details["amplification_factor"],
+                               details["unsolicited_response"],
+                               details["private_address"]])
 
             table.sortby = "Amplification Factor"
             # sort in descending order
