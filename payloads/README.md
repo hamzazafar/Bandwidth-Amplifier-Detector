@@ -1,8 +1,8 @@
 # Request Payload Hex Dumps
 
 
-|Protocol| Description |Type |UDP Port | Request Payload | 
-|---| --- | ---| --- | --- |
+|Protocol| Description |UDP Port | Request Payload| 
+|---| --- | ---| --- | 
 |**NTP**| monlist command | 123 |`1700032a000000000000000000000000` | 
 |**DNS**|  ANY google.com query| 53 |`17ea0100000100000000000106676f6f676c6503636f6d0000ff00010000290200000000000000` | 
 |**Memcached**|  stat items |11211 | `5a4d0000000100007374617473206974` | 
