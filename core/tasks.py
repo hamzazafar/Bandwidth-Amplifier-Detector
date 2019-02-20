@@ -86,7 +86,7 @@ def scan(self, scan_name, address_range, target_port, version,
             raise Exception("IPV6_SRC_ADDR is not set in configuration")
 
         cmd += '--ipv6-source-ip=%s ' % IPV6_SRC_ADDR
-        cmd += '--ipv6-target-file=- ')
+        cmd += '--ipv6-target-file=- '
 
     process = Popen(cmd,
                     shell=True,
@@ -130,6 +130,7 @@ def scan(self, scan_name, address_range, target_port, version,
             amps[amplifier]["total_response_size"] = 0
             amps[amplifier]["destination_address"] = daddr
 
+            amps[amplifier]["private_address"] = ip_address(amplifier).is_private
             amps[amplifier]["unsolicited_response"] = is_unsolicited_response(scanned_addresses_list, int(ip_address(amplifier)))
 
         amps[amplifier]["total_response_size"] += int(response_size)

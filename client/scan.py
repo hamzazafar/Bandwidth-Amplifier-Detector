@@ -40,13 +40,21 @@ def process_result(result):
         table.field_names = ["Amplifier",
                              "Response Size",
                              "Amplification Factor",
-                             "Unsolicited Response"]
+                             "Unsolicited Response",
+                             "Address Type"]
 
         for ip, details in result["amplifiers"].items():
+            addr_type = ''
+            if details["private_address"]:
+                addr_type = "Private"
+            else:
+                addr_type = "Public"
+
             table.add_row([ip,
                            details["total_response_size"],
                            details["amplification_factor"],
-                           details["unsolicited_response"]])
+                           details["unsolicited_response"],
+                           addr_type])
 
         table.sortby = "Amplification Factor"
         # sort in descending order

@@ -25,6 +25,7 @@ class ScanTimeSeriesResult(models.Model):
 class Amplifier(models.Model):
 
     address = models.CharField(null=False, max_length=255)
+    private_address = models.BooleanField(default=True)
     total_response_size = models.IntegerField(null=False)
     amplification_factor = models.FloatField(null=False)
     unsolicited_response = models.BooleanField(default=False)

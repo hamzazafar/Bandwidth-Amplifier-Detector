@@ -58,6 +58,7 @@ def create_result(sender, instance, created, *args, **kwargs):
                                     total_response_size=details["total_response_size"],
                                     amplification_factor=details["amplification_factor"],
                                     unsolicited_response=details["unsolicited_response"],
+                                    private_address=details["private_address"],
                                     scan=scan_result_obj)
                 amp_obj.save()
 
