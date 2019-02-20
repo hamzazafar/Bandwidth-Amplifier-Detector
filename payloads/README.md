@@ -9,3 +9,4 @@
 |**SNMP**|  system description field using community string public | 161 |`302902010004067075626c6963a01c0204565adc5d020100020100300e300c06082b060102010101000500` |
 |**CharGen**| one byte data "a" | 19 |`610a` |
 |**RIPv1** | malformed request | 520 |`01010000000000000000000000000000`|
+|**QOTD**| trigger a quote | 17 | `00`|
