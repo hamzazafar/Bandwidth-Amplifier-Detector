@@ -87,9 +87,9 @@ class ScanSerializer(serializers.ModelSerializer):
         cron_month_of_year = cron_data.get("month_of_year", instance.crontab.month_of_year)
         cron_str = "{0} {1} {2} {3} {4}".format(cron_minute,
                                                 cron_hour,
-                                                cron_day_of_week,
                                                 cron_day_of_month,
-                                                cron_month_of_year)
+                                                cron_month_of_year,
+                                                cron_day_of_week)
 
         instance_kwargs = json.loads(instance.kwargs)
         instance_kwargs["cron_str"] = cron_str
@@ -130,9 +130,9 @@ class ScanSerializer(serializers.ModelSerializer):
         cron_month_of_year = cron_data.get("month_of_year", "*")
         cron_str = "{0} {1} {2} {3} {4}".format(cron_minute,
                                                 cron_hour,
-                                                cron_day_of_week,
                                                 cron_day_of_month,
-                                                cron_month_of_year)
+                                                cron_month_of_year,
+                                                cron_day_of_week)
 
         crontab_obj,_ = CrontabSchedule.objects.get_or_create(minute=cron_minute,
                                                               hour=cron_hour,
