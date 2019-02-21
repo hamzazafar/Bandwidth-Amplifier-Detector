@@ -72,7 +72,7 @@ def scan(self, scan_name, address_range, target_port, version,
            '--output-filter={6} ').format(zmap_udp_probe,
                                           str(target_port),
                                           request_hexdump,
-                                          'saddr,daddr,ipid,ttl,sport,dport,udp_pkt_size,data',
+                                          'saddr,daddr,ipid,ttl,sport,dport,udp_pkt_size,data,classification',
                                           str(packets_per_second),
                                           'csv',
                                           '"success = 1"',
@@ -123,7 +123,11 @@ def scan(self, scan_name, address_range, target_port, version,
     for row in stdout[1:]:
         if not row:
             continue
-        amplifier, daddr, ipid, ttl, sport, dport, response_size, response_data = row.split(',')
+        amplifier, daddr, ipid, ttl, sport, dport, response_size, response_data, classification = row.split(',')
+
+        if classification != "udp":
+            continue
+
         if amplifier not in amps:
             amps[amplifier] = dict()
             amps[amplifier]["responses"] = list()
