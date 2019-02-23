@@ -138,7 +138,8 @@ def scan(self, scan_name, address_range, target_port, version,
             amps[amplifier]["unsolicited_response"] = is_unsolicited_response(scanned_addresses_list, int(ip_address(amplifier)))
 
         # subtract udp header size (8 bytes)
-        amps[amplifier]["total_response_size"] += int(response_size) - 8
+        response_size = int(response_size) - 8
+        amps[amplifier]["total_response_size"] += response_size
         amps[amplifier]["amplification_factor"] = round(amps[amplifier]["total_response_size"]/request_size, 2)
 
         response = dict()
@@ -147,7 +148,7 @@ def scan(self, scan_name, address_range, target_port, version,
         response["response_sport"] = int(sport)
         response["response_dport"] = int(dport)
         response["response_hex_data"] = response_data
-        response["response_size"] = int(response_size)
+        response["response_size"] = response_size
 
         amps[amplifier]["responses"].append(response)
 
