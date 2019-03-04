@@ -57,6 +57,9 @@ def scan(self, scan_name, address_range, target_port, version,
         raise ValueError("Invalid IP Address Version %s specified " % version)
 
     request_size = len(request_hexdump)/2.0;
+    if request_size == 0:
+        # avoid division by zero in BAF calculation
+        request_size = 1
 
     zmap_udp_probe = "udp" if version == 4 else "ipv6_udp"
 
