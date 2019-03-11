@@ -16,7 +16,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 2,
-  "iteration": 1550671082599,
+  "iteration": 1552288409400,
   "links": [],
   "panels": [
     {
@@ -962,8 +962,8 @@
       "scroll": true,
       "showHeader": true,
       "sort": {
-        "col": null,
-        "desc": false
+        "col": 2,
+        "desc": true
       },
       "styles": [
         {
@@ -1029,9 +1029,8 @@
       {
         "allValue": null,
         "current": {
-          "selected": true,
-          "text": "test",
-          "value": "test"
+          "text": "scan_chargen",
+          "value": "scan_chargen"
         },
         "datasource": "MySQL",
         "definition": "select name from django_celery_beat_periodictask where name!=\"celery.backend_cleanup\";",
@@ -1086,5 +1085,5 @@
   "timezone": "",
   "title": "Scan Details",
   "uid": "MXStvkQmk",
-  "version": 17
+  "version": 18
 }
