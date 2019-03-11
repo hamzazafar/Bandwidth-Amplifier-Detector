@@ -16,7 +16,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 4,
-  "iteration": 1550671376790,
+  "iteration": 1552288431326,
   "links": [],
   "panels": [
     {
@@ -261,22 +261,25 @@
         "x": 14,
         "y": 3
       },
+      "hideTimeOverride": false,
       "id": 6,
       "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "max": true,
+        "min": true,
+        "rightSide": false,
         "show": true,
         "total": false,
-        "values": false
+        "values": true
       },
       "lines": true,
-      "linewidth": 1,
+      "linewidth": 2,
       "links": [],
       "nullPointMode": "null",
       "percentage": false,
-      "pointradius": 2,
+      "pointradius": 3,
       "points": true,
       "renderer": "flot",
       "seriesOverrides": [],
@@ -290,7 +293,7 @@
           "hide": false,
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "select  b.created AS \"time\", address as \"metric\", a.amplification_factor from core_amplifier a join core_scantimeseriesresult b on a.scan_id=b.id where a.address=\"$amp_name\";",
+          "rawSql": "select  b.created AS \"time\", address as \"metric\", a.amplification_factor from core_amplifier a join core_scantimeseriesresult b on a.scan_id=b.id where a.address=\"$amp_name\" and b.scan_name=\"$scan_name\";",
           "refId": "A",
           "select": [
             [
@@ -318,7 +321,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Change In BAF",
+      "title": "Change in Bandwidth Amplification Factor",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -335,7 +338,7 @@
       "yaxes": [
         {
           "format": "short",
-          "label": null,
+          "label": "BAF",
           "logBase": 1,
           "max": null,
           "min": null,
@@ -343,11 +346,11 @@
         },
         {
           "format": "short",
-          "label": null,
+          "label": "",
           "logBase": 1,
           "max": null,
           "min": null,
-          "show": true
+          "show": false
         }
       ],
       "yaxis": {
@@ -356,7 +359,7 @@
       }
     }
   ],
-  "refresh": "5s",
+  "refresh": false,
   "schemaVersion": 16,
   "style": "dark",
   "tags": [],
@@ -365,8 +368,9 @@
       {
         "allValue": null,
         "current": {
-          "text": "5",
-          "value": "5"
+          "tags": [],
+          "text": "12",
+          "value": "12"
         },
         "datasource": "MySQL",
         "definition": "select id from core_amplifier;",
@@ -390,8 +394,9 @@
       {
         "allValue": null,
         "current": {
-          "text": "129.187.88.248",
-          "value": "129.187.88.248"
+          "isNone": true,
+          "text": "None",
+          "value": ""
         },
         "datasource": "MySQL",
         "definition": "select address from core_amplifier where id=${amp_id}",
@@ -485,5 +490,5 @@
   "timezone": "",
   "title": "Amplifier",
   "uid": "TSuAyaXik",
-  "version": 25
+  "version": 28
 }
