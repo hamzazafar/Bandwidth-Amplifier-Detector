@@ -19,6 +19,17 @@
   "links": [],
   "panels": [
     {
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 16,
+      "title": "Row title",
+      "type": "row"
+    },
+    {
       "cacheTimeout": null,
       "colorBackground": false,
       "colorValue": true,
@@ -41,7 +52,7 @@
         "h": 4,
         "w": 3,
         "x": 0,
-        "y": 0
+        "y": 1
       },
       "id": 6,
       "interval": "",
@@ -159,7 +170,7 @@
         "h": 4,
         "w": 3,
         "x": 3,
-        "y": 0
+        "y": 1
       },
       "id": 13,
       "interval": "",
@@ -277,7 +288,7 @@
         "h": 4,
         "w": 3,
         "x": 6,
-        "y": 0
+        "y": 1
       },
       "id": 14,
       "interval": "",
@@ -313,7 +324,7 @@
         "lineColor": "rgb(31, 120, 193)",
         "show": false
       },
-      "tableColumn": "sum(a.active_amplifiers_count)",
+      "tableColumn": "sum(a.public_amplifiers_count)",
       "targets": [
         {
           "format": "table",
@@ -329,7 +340,7 @@
           "hide": false,
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "select sum(a.active_amplifiers_count) from core_scantimeseriesresult a left outer join core_scantimeseriesresult b on a.scan_name=b.scan_name and a.created<b.created and a.status=\"SUCCESS\" and b.status=\"SUCCESS\" where b.scan_name is null and a.status=\"SUCCESS\" order by a.created desc;",
+          "rawSql": "select sum(a.public_amplifiers_count) from core_scantimeseriesresult a left outer join core_scantimeseriesresult b on a.scan_name=b.scan_name and a.created<b.created and a.status=\"SUCCESS\" and b.status=\"SUCCESS\" where b.scan_name is null and a.status=\"SUCCESS\" order by a.created desc;",
           "refId": "A",
           "select": [
             [
@@ -373,17 +384,6 @@
       "valueName": "avg"
     },
     {
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 4
-      },
-      "id": 12,
-      "title": "Row title",
-      "type": "row"
-    },
-    {
       "aliasColors": {},
       "bars": false,
       "dashLength": 10,
@@ -392,22 +392,25 @@
       "description": "Time series displays the active amplifier counts from the last successful scanning jobs",
       "fill": 1,
       "gridPos": {
-        "h": 10,
-        "w": 12,
+        "h": 8,
+        "w": 23,
         "x": 0,
         "y": 5
       },
       "id": 8,
       "legend": {
-        "alignAsTable": false,
-        "avg": false,
+        "alignAsTable": true,
+        "avg": true,
         "current": false,
-        "max": false,
-        "min": false,
-        "rightSide": false,
+        "hideEmpty": false,
+        "hideZero": false,
+        "max": true,
+        "min": true,
+        "rightSide": true,
         "show": true,
+        "sideWidth": 350,
         "total": false,
-        "values": false
+        "values": true
       },
       "lines": true,
       "linewidth": 2,
@@ -472,7 +475,7 @@
       "yaxes": [
         {
           "format": "short",
-          "label": null,
+          "label": "No. of Active Amplifiers",
           "logBase": 1,
           "max": null,
           "min": null,
@@ -498,10 +501,10 @@
       "description": "Display amplifier details from last successful scanning jobs",
       "fontSize": "100%",
       "gridPos": {
-        "h": 10,
-        "w": 12,
-        "x": 12,
-        "y": 5
+        "h": 7,
+        "w": 23,
+        "x": 0,
+        "y": 13
       },
       "id": 10,
       "links": [],
@@ -509,8 +512,8 @@
       "scroll": true,
       "showHeader": true,
       "sort": {
-        "col": null,
-        "desc": false
+        "col": 3,
+        "desc": true
       },
       "styles": [
         {
@@ -580,8 +583,8 @@
     "list": []
   },
   "time": {
-    "from": "now-3h",
-    "to": "now"
+    "from": "2019-02-17T16:05:50.502Z",
+    "to": "2019-03-11T04:46:55.088Z"
   },
   "timepicker": {
     "refresh_intervals": [
@@ -602,5 +605,5 @@
   "timezone": "browser",
   "title": "Home",
   "uid": "17TOXPUik",
-  "version": 12
+  "version": 18
 }
