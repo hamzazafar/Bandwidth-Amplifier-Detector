@@ -187,7 +187,7 @@ pip install -r requirements.txt
 ### Set configurations in settings.py
 1. Set the DATABASES conf block:
 2. Set the db name, user, password and HOST (Master Node's IP)
-3. Change the CELERY_BROKER_URL to 'amqp://<amqp-user>:<amqp-password>@<master-node-ip>:5672//'
+3. Change the CELERY_BROKER_URL to ```amqp://<amqp-user>:<amqp-password>@<master-node-ip>:5672//```
 4. To configure email notification, check out the confs starting with ```EMAIL_```
 5. To use custom ZMap Installation, set the ```ZMAP_PATH``` configuration
 6. To use IPv6 probes, set the ```IPV6_SRC_ADDR``` configuration
