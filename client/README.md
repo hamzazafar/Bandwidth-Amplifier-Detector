@@ -143,7 +143,8 @@ Scans List:
 
 ### Get RAW JSON data
 ```
-(git)-[master] # python scan.py result --name scan_dns_any_query --latest=2 --raw       1647 1 pts/1 ~/ma-zafar/master-thesis/client root@planetlab19 19-03-16 8:35:46
+(git)-[master] # python scan.py result --name scan_dns_any_query --latest=2 --raw
+
 [
     {
         "active_amplifiers_count": 1,
