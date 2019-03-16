@@ -148,6 +148,13 @@ if args.type == "create":
     if not args.request_payload:
         errors += "scan create requires --request-payload argument\n"
 
+    if (args.minute == '*' and
+        args.hour == '*' and
+        args.day_of_week == '*' and
+        args.day_of_month == '*' and
+        args.month_of_year == '*'):
+        errors += "pass arguments related to cron: --minute --hour --day_of_week --day_of_month --month_of_year"
+
     if errors:
         parser.error(errors)
 
@@ -316,11 +323,34 @@ elif args.type == "disable" or args.type == "enable":
         sys.exit(1)
 
 elif args.type == "update":
+    errors = ""
     if not args.name:
-        parser.error("scan update requires --name argument")
+        errors += "scan update requires --name argument\n"
+
+    if not args.target_port:
+        errors += "scan update requires --target-port argument\n"
+
+    if not (args.target_hosts or args.target_hosts_file):
+        errors += "scan update requires --target-hosts or target-hosts-file argument\n"
 
     if args.target_hosts_file and args.target_hosts:
         parser.error("pass one of target-hosts-file or target-hosts argument but not both")
+
+    if not args.request_payload:
+        errors += "scan update requires --request-payload argument\n"
+
+    if not args.rate:
+        errors += "scan update requires --rate argument"
+
+    if (args.minute == '*' and
+        args.hour == '*' and
+        args.day_of_week == '*' and
+        args.day_of_month == '*' and
+        args.month_of_year == '*'):
+        errors += "pass arguments related to cron: --minute --hour --day_of_week --day_of_month --month_of_year"
+
+    if errors:
+        parser.error(errors)
 
     try:
         url = "http://%s:%s/api/v1/scan/%s" % (HOST, PORT, args.name)
@@ -337,34 +367,18 @@ elif args.type == "update":
         else:
             target_hosts_list = args.target_hosts
 
-        if target_hosts_list:
-            params['scan_args']['address_range'] = ','.join(target_hosts_list)
-
-        if args.target_port:
-            params['scan_args']['target_port'] = args.target_port
-
-        if args.request_payload:
-            params['scan_args']['request_hexdump'] = args.request_payload
-
-        if args.rate:
-            params['scan_args']['packets_per_second'] = args.rate
+        params['scan_args']['address_range'] = ','.join(target_hosts_list)
+        params['scan_args']['target_port'] = args.target_port
+        params['scan_args']['request_hexdump'] = args.request_payload
+        params['scan_args']['packets_per_second'] = args.rate
 
         params['crontab'] = dict()
 
-        if args.minute:
-            params['crontab']['minute'] = args.minute
-
-        if args.hour:
-            params['crontab']['hour'] = args.hour
-
-        if args.day_of_week:
-            params['crontab']['day_of_week'] = args.day_of_week
-
-        if args.day_of_month:
-            params['crontab']['day_of_month'] = args.day_of_month
-
-        if args.month_of_year:
-            params['crontab']['month_of_year'] = args.month_of_year
+        params['crontab']['minute'] = args.minute
+        params['crontab']['hour'] = args.hour
+        params['crontab']['day_of_week'] = args.day_of_week
+        params['crontab']['day_of_month'] = args.day_of_month
+        params['crontab']['month_of_year'] = args.month_of_year
 
         res = requests.put(url, json=params)
 
