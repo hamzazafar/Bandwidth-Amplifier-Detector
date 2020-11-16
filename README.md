@@ -284,4 +284,3 @@ Scan Args: {'scan_name': 'scan_two', 'address_range': ['10.10.0.0/24', '10.0.0.0
 (thesis) hamza@hamza:~/master-thesis/client$ python scan.py kill --task-id e6bde8ae-1ba2-4313-b766-a0bcb1dbc225
 Task 'e6bde8ae-1ba2-4313-b766-a0bcb1dbc225' is killed successfully
 ```
-Caveat: Run the command ```python scan.py list-running``` 3-4 times, you will see an exception at first but eventually get the result in 3rd or 4th try. 
